@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centrifugal Pump Digital Twin v2</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>🔧 CENTRIFUGAL PUMP DIGITAL TWIN</h1>
+  <div id="connStatus" class="conn">● STARTING...</div>
+</header>
+
+<div class="banner">
+  <span class="layer ml">🧠 ML LAYER</span> <span class="arrow">→</span>
+  <span class="layer be">⚙️ BACKEND</span> <span class="arrow">→</span>
+  <span class="layer fe">🎨 FRONTEND</span>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT: MOTOR + USAGE MODES -->
+  <div class="panel">
+    <h2>🌀 Pump Motor</h2>
+    <div class="pump-stage" id="pumpStage">
+      <div class="volute"></div>
+      <div class="motor"></div>
+      <div class="impeller" id="impeller"></div>
+    </div>
+    <div class="rpm-readout">SPEED: <span id="motorRpm">1750</span> RPM</div>
+
+    <h2 style="margin-top:20px;">⚙️ Usage Mode</h2>
+    <div class="modes">
+      <button data-mode="normal" class="active">😊 Normal</button>
+      <button data-mode="light">🌤️ Lightly Used</button>
+      <button data-mode="stress">😰 Under Stress</button>
+      <button data-mode="heavy">🔥 Heavily Used</button>
+      <button data-mode="rough">💀 Roughly Used</button>
+    </div>
+  </div>
+
+  <!-- CENTER: INPUT PARAMETERS -->
+  <div class="panel">
+    <h2>🎛️ Input Parameters (13 Features)</h2>
+    <div id="sliders"></div>
+    <button id="diagnoseBtn" class="diagnose">🔍 RUN HEALTH DIAGNOSIS</button>
+  </div>
+
+  <!-- RIGHT: PART STATE -->
+  <div class="panel">
+    <h2>📋 Part State</h2>
+    <div id="stateBadge" class="state-badge">—</div>
+    <div class="gauge"><div id="healthBar"></div></div>
+    <div class="score"><span id="healthScore">--</span><small>/100</small></div>
+    <div id="source" class="source"></div>
+
+    <div class="metrics">
+      <div class="metric"><label>⏱️ RUL</label><span id="rul">--</span></div>
+      <div class="metric"><label>⚠️ Anomaly Risk</label><span id="anomaly">--</span></div>
+    </div>
+
+    <h3>🔍 Key Factors</h3>
+    <div id="factors"></div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
