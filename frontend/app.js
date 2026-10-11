@@ -1,5 +1,6 @@
 /* Pump Digital Twin v2 — motor first, sliders, then 5-state diagnosis */
-const API_URL = "http://localhost:8000/api/predict";
+const BACKEND_URL = window.REACT_APP_BACKEND_URL || window.BACKEND_API_URL || (window.location.hostname === "localhost" ? "http://localhost:8000" : "");
+const API_URL = BACKEND_URL ? `${BACKEND_URL}/api/predict` : "/api/predict";
 
 const PARAMETERS = [
   { name:"A_ACR_Mot.PV", label:"Motor Current (PV)", min:0,  max:120,  unit:"A"   },
