@@ -1013,19 +1013,255 @@ body.seminar-active .scada-header h1 {
 }
 
 /* ===================================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN & 2-COLUMN SCADA LAYOUT
    =================================================================== */
-@media (max-width: 1400px) {
-  .dashboard-grid {
-    grid-template-columns: 360px 1fr 300px;
-  }
+.dashboard-grid-2col {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  flex: 1;
+  max-width: 1920px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-@media (max-width: 1180px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .models-tri-grid {
+.panel-main-suite {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Telemetry snapshot under twin */
+.telemetry-snapshot-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.snapshot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.snapshot-item {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  border-radius: 4px;
+  padding: 5px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.snapshot-label {
+  color: var(--text-muted);
+}
+
+.snapshot-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+/* ===================================================================
+   ON-PAGE MODEL ACCURACY BENCHMARK TABLE
+   =================================================================== */
+.benchmark-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 8px;
+}
+
+.table-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-card-title h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.dataset-source-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-dark);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-dim);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.accuracy-benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.accuracy-benchmark-table th, .accuracy-benchmark-table td {
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.accuracy-benchmark-table th {
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.accuracy-benchmark-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.row-highlight {
+  background: rgba(6, 182, 212, 0.08);
+  border-left: 3px solid var(--color-xgb);
+}
+
+.color-text-rf { color: var(--color-rf); }
+.color-text-ridge { color: var(--color-ridge); }
+.color-text-xgb { color: var(--color-xgb); }
+
+.verdict-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.verdict-good { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+.verdict-linear { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4); }
+.verdict-recommended { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.5); }
+
+/* ===================================================================
+   3 DEDICATED GRAPHS FOR EACH MODEL
+   =================================================================== */
+.three-graphs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dedicated-chart-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+.dedicated-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chart-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-model-chip {
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.chart-heading {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.dedicated-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.leg-box {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+}
+.leg-actual { background: #ffffff; }
+.leg-rf { background: var(--color-rf); }
+.leg-ridge { background: var(--color-ridge); }
+.leg-xgb { background: var(--color-xgb); }
+.leg-anom { background: #ef4444; }
+
+.dedicated-canvas-holder {
+  height: 140px;
+  width: 100%;
+  position: relative;
+}
+
+/* Modal sliders */
+.modal-sliders-content {
+  width: 820px;
+}
+.modal-sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-height: 460px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-grid-2col {
     grid-template-columns: 1fr;
   }
 }

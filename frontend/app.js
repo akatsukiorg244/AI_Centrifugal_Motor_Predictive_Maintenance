@@ -30,11 +30,10 @@ const state = {
   trajectory: [],
   isBackendLive: false,
   charts: {
-    rul: null,
-    anomaly: null,
-    health: null
-  },
-  currentPointIndex: 0
+    rf: null,
+    ridge: null,
+    xgb: null
+  }
 };
 
 // ===================================================================
@@ -42,11 +41,10 @@ const state = {
 // ===================================================================
 document.addEventListener("DOMContentLoaded", async () => {
   initClock();
-  buildSliders();
   initHotspotEvents();
   initModals();
   initScenarioButtons();
-  initScrubber();
+  initModalSliders();
 
   // Load benchmark dataset
   await loadBenchmarkData();
@@ -54,8 +52,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Test backend connection
   await checkBackendStatus();
 
-  // Initialize charts with real trajectory
+  // Initialize the 3 dedicated model charts
   initCharts();
+
+  // Update snapshot telemetry grid
+  updateSnapshotGrid();
 
   // Execute initial diagnosis
   runMultiModelDiagnosis();
@@ -104,55 +105,6 @@ async function checkBackendStatus() {
   text.textContent = "● CLOUD CLIENT ENGINE (HIGH ACCURACY)";
 }
 
-// ===================================================================
-// BUILD 13 TELEMETRY SLIDERS
-// ===================================================================
-function buildSliders() {
-  const container = document.getElementById("slidersContainer");
-  container.innerHTML = "";
-
-  TELEMETRY_DEFS.forEach((def, index) => {
-    const row = document.createElement("div");
-    row.className = "telemetry-row";
-    row.innerHTML = `
-      <div class="telemetry-head">
-        <span class="telemetry-label">${def.label}</span>
-        <span class="telemetry-val" id="val-${def.key}">${formatNumber(state.currentFeatures[index])} ${def.unit}</span>
-      </div>
-      <input type="range" class="telemetry-slider" id="slider-${def.key}"
-             min="${def.min}" max="${def.max}" step="${def.step}" value="${state.currentFeatures[index]}">
-    `;
-    container.appendChild(row);
-
-    const input = row.querySelector("input");
-    input.addEventListener("input", (e) => {
-      const val = parseFloat(e.target.value);
-      state.currentFeatures[index] = val;
-      document.getElementById(`val-${def.key}`).textContent = `${formatNumber(val)} ${def.unit}`;
-      updateTwinVisuals();
-      runMultiModelDiagnosis();
-    });
-  });
-
-  // Reset baseline button
-  document.getElementById("resetTelemetryBtn").addEventListener("click", () => {
-    TELEMETRY_DEFS.forEach((def, idx) => {
-      state.currentFeatures[idx] = def.baseline;
-      document.getElementById(`slider-${def.key}`).value = def.baseline;
-      document.getElementById(`val-${def.key}`).textContent = `${formatNumber(def.baseline)} ${def.unit}`;
-    });
-    document.querySelectorAll(".btn-scenario").forEach(b => b.classList.remove("active"));
-    document.querySelector('.btn-scenario[data-scenario="nominal"]').classList.add("active");
-    updateTwinVisuals();
-    runMultiModelDiagnosis();
-  });
-
-  // Diagnose button
-  document.getElementById("runDiagnosisBtn").addEventListener("click", () => {
-    runMultiModelDiagnosis();
-  });
-}
-
 function formatNumber(num) {
   if (num >= 1000) return Math.round(num).toLocaleString();
   if (num >= 10) return num.toFixed(1);
@@ -161,13 +113,37 @@ function formatNumber(num) {
 }
 
 // ===================================================================
+// ACTIVE TELEMETRY SNAPSHOT
+// ===================================================================
+function updateSnapshotGrid() {
+  const grid = document.getElementById("telemetrySnapshotGrid");
+  if (!grid) return;
+
+  const highlights = [
+    { label: "RPM", val: `${Math.round(state.currentFeatures[11])} RPM` },
+    { label: "Vibration", val: `${state.currentFeatures[8].toFixed(2)} Hz` },
+    { label: "Pressure", val: `${state.currentFeatures[6].toFixed(2)} bar` },
+    { label: "Pump Temp", val: `${state.currentFeatures[7].toFixed(1)} °C` },
+    { label: "Motor Load", val: `${state.currentFeatures[10].toFixed(1)} %` },
+    { label: "Ambient Temp", val: `${state.currentFeatures[9].toFixed(1)} °C` }
+  ];
+
+  grid.innerHTML = highlights.map(h => `
+    <div class="snapshot-item">
+      <span class="snapshot-label">${h.label}</span>
+      <span class="snapshot-val">${h.val}</span>
+    </div>
+  `).join("");
+}
+
+// ===================================================================
 // INTERACTIVE DIGITAL TWIN VISUALS
 // ===================================================================
 function updateTwinVisuals() {
-  const rpm = state.currentFeatures[11];      // RPM
-  const vib = state.currentFeatures[8];       // Vibration_hz
-  const pres = state.currentFeatures[6];      // Pressure
-  const temp = state.currentFeatures[7];      // Temp
+  const rpm = state.currentFeatures[11];
+  const vib = state.currentFeatures[8];
+  const pres = state.currentFeatures[6];
+  const temp = state.currentFeatures[7];
 
   // Update SVG Readouts
   document.getElementById("svgRpm").textContent = `${Math.round(rpm)} RPM`;
@@ -206,6 +182,8 @@ function updateTwinVisuals() {
       deBrg.querySelector("rect").setAttribute("stroke", "#10b981");
     }
   }
+
+  updateSnapshotGrid();
 }
 
 // Component Click-to-Inspect Hotspots
@@ -313,29 +291,22 @@ function executeClientMLInference(f) {
   }
 
   // 2. Tree-based Models (XGBoost & Random Forest)
-  // Reconstruct exact non-linear response surface calibrated on test set
   const pres = f[6];
   const vib = f[8];
   const load = f[10];
   const motTV = f[2];
-  const pmpTV = f[5];
 
-  // Primary RUL driver in dataset is cumulative operation totalizer + pressure degradation
-  // Totalizer hours progress: Motor TV & Pump TV track aging
   const totalizerNorm = Math.min(1.0, Math.max(0.0, (motTV - 38.0) / 9.0));
   const baseLifeRemaining = maxRul * (1.0 - totalizerNorm * 0.95);
 
-  // Stress penalties
   const vibPenalty = Math.max(0, (vib - 3.4) * 85);
   const presPenalty = Math.max(0, (4.0 - pres) * 60);
   const loadPenalty = Math.max(0, (load - 75) * 4);
 
-  // XGBoost non-linear gradient response
   let xgbRul = Math.max(0, baseLifeRemaining - vibPenalty * 1.05 - presPenalty * 1.1 - loadPenalty);
   let xgbHealth = (xgbRul / maxRul) * 100.0;
   let xgbAnomProb = (vib > 4.2 || xgbRul < 120 || pres < 1.0) ? 0.98 : (vib > 3.6 ? 0.45 : 0.02);
 
-  // Random Forest ensemble response (slightly smoother bagging)
   let rfRul = Math.max(0, baseLifeRemaining - vibPenalty * 0.98 - presPenalty * 1.02 - loadPenalty);
   let rfHealth = (rfRul / maxRul) * 100.0;
   let rfAnomProb = (vib > 4.1 || rfRul < 125 || pres < 1.2) ? 0.99 : (vib > 3.7 ? 0.40 : 0.01);
@@ -420,7 +391,7 @@ function renderPredictionResults(data) {
   document.getElementById("xgbHealthBar").style.width = `${Math.min(100, xgb.health_score)}%`;
   document.getElementById("xgbAnomaly").textContent = `${xgb.anomaly_probability}%`;
 
-  // Consensus Strip & Insight
+  // Consensus Strip
   document.getElementById("ensembleRul").textContent = `${con.ensemble_rul_hours.toLocaleString()} hrs (~${Math.round(con.ensemble_rul_hours/24)} days)`;
   document.getElementById("consensusAgreement").textContent = `${con.model_agreement} AGREEMENT (Delta: ${con.discrepancy_hours}h | ${con.consensus_confidence_pct}% Conf)`;
   
@@ -436,64 +407,20 @@ function renderPredictionResults(data) {
   // Global Anomaly Badge
   const maxAnom = Math.max(rf.anomaly_probability, ridge.anomaly_probability, xgb.anomaly_probability);
   const globalAnom = document.getElementById("globalAnomalyBadge");
-  const chartAnomTag = document.getElementById("chartAnomalyStatus");
   if (maxAnom >= 70) {
     globalAnom.textContent = "🚨 CRITICAL ANOMALY ALARM";
     globalAnom.className = "status-pill status-critical";
-    chartAnomTag.textContent = "ALARM: CRITICAL FAULT";
-    chartAnomTag.style.color = "#ef4444";
   } else if (maxAnom >= 30) {
     globalAnom.textContent = "⚠️ ELEVATED WEAR WARNING";
     globalAnom.className = "status-pill status-warning";
-    chartAnomTag.textContent = "WARNING: HIGH VIBRATION";
-    chartAnomTag.style.color = "#f59e0b";
   } else {
     globalAnom.textContent = "NORMAL OPERATING REGIME";
     globalAnom.className = "status-pill status-healthy";
-    chartAnomTag.textContent = "NORMAL REGIME";
-    chartAnomTag.style.color = "#10b981";
   }
-
-  // Consensus Explanation Note for Judges
-  document.getElementById("consensusTag").textContent = `Delta: ${con.discrepancy_hours} hrs`;
-  const consensusText = document.getElementById("consensusText");
-  if (con.discrepancy_hours < 25) {
-    consensusText.innerHTML = `<strong>High Multi-Model Convergence:</strong> All 3 ML architectures (Random Forest, Ridge Regression, XGBoost) agree within ±${con.discrepancy_hours} hours. This confirms current telemetry is operating safely within the linear nominal manifold.`;
-  } else {
-    consensusText.innerHTML = `<strong>Model Divergence Triggered:</strong> Linear Ridge error gap expanded to <strong>${con.discrepancy_hours} hours</strong> compared to non-linear tree models (XGBoost &amp; Random Forest). This proves to seminar judges why tree boosting is required for non-linear saturation thresholds.`;
-  }
-
-  // Render dynamic feature importance
-  renderFeatureFactors();
-}
-
-function renderFeatureFactors() {
-  const container = document.getElementById("factorsList");
-  const f = state.currentFeatures;
-  const factors = [];
-
-  // Inspect significant features
-  if (f[8] > 3.8) factors.push({ name: "Vibration Harmonics", val: `${f[8].toFixed(2)} Hz`, weight: "+42% risk" });
-  if (f[6] < 3.0) factors.push({ name: "Suction Pressure Drop", val: `${f[6].toFixed(2)} bar`, weight: "+35% risk" });
-  if (f[7] > 42.0) factors.push({ name: "Pump Thermal Rise", val: `${f[7].toFixed(1)} °C`, weight: "+28% risk" });
-  if (f[10] > 75.0) factors.push({ name: "Overload Demand", val: `${f[10].toFixed(1)} %`, weight: "+18% risk" });
-
-  if (factors.length === 0) {
-    factors.push({ name: "Operating Pressure (A_Pres.PV)", val: `${f[6].toFixed(2)} bar`, weight: "76.2% Tree Importance" });
-    factors.push({ name: "Motor Totalizer (A_ACR_Mot.TV)", val: `${f[2].toFixed(1)} kWh`, weight: "11.4% Tree Importance" });
-    factors.push({ name: "Pump Totalizer (A_ACR_Pmp.TV)", val: `${f[5].toFixed(1)} kWh`, weight: "10.7% Tree Importance" });
-  }
-
-  container.innerHTML = factors.map(x => `
-    <div class="factor-item">
-      <span class="factor-name">${x.name} (${x.val})</span>
-      <span class="factor-weight">${x.weight}</span>
-    </div>
-  `).join("");
 }
 
 // ===================================================================
-// CHART.JS INDUSTRIAL GRAPHS
+// THREE DEDICATED GRAPHS FOR EACH MODEL (ACTUAL RUL vs PREDICTED vs ANOMALY)
 // ===================================================================
 function initCharts() {
   const traj = state.trajectory;
@@ -505,125 +432,175 @@ function initCharts() {
   const ridgeRul = traj.map(d => d.ridge_rul);
   const xgbRul = traj.map(d => d.xgb_rul);
 
-  // Common chart styling
-  const gridColor = "rgba(255, 255, 255, 0.06)";
+  const rfAnom = traj.map(d => d.rf_anomaly_prob);
+  const ridgeAnom = traj.map(d => d.ridge_anomaly_prob);
+  const xgbAnom = traj.map(d => d.xgb_anomaly_prob);
+
+  const gridColor = "rgba(255, 255, 255, 0.05)";
   const fontConfig = { family: "'JetBrains Mono'", size: 9 };
 
-  // 1. RUL Trajectory Graph
-  const ctxRul = document.getElementById("chartRul").getContext("2d");
-  state.charts.rul = new Chart(ctxRul, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [
-        { label: "Ground Truth", data: actualRul, borderColor: "#ffffff", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
-        { label: "Random Forest", data: rfRul, borderColor: "#8b5cf6", borderWidth: 1.8, pointRadius: 0, borderDash: [4, 4] },
-        { label: "Ridge Regr.", data: ridgeRul, borderColor: "#f59e0b", borderWidth: 1.5, pointRadius: 0 },
-        { label: "XGBoost", data: xgbRul, borderColor: "#06b6d4", borderWidth: 2, pointRadius: 0 }
-      ]
+  const createChartOptions = (modelColor) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: "rgba(15, 23, 42, 0.95)",
+        titleFont: { family: "'JetBrains Mono'", size: 10 },
+        bodyFont: { family: "'JetBrains Mono'", size: 10 },
+        borderColor: "#334155",
+        borderWidth: 1
+      }
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: "#64748b", font: fontConfig, maxTicksLimit: 12 } },
-        y: {
-          grid: { color: gridColor },
-          ticks: { color: "#64748b", font: fontConfig },
-          title: { display: true, text: "Hours", color: "#64748b", font: fontConfig }
-        }
+    scales: {
+      x: {
+        grid: { color: gridColor },
+        ticks: { color: "#64748b", font: fontConfig, maxTicksLimit: 14 }
+      },
+      yRul: {
+        type: 'linear',
+        position: 'left',
+        min: 0,
+        max: 1250,
+        grid: { color: gridColor },
+        ticks: { color: "#94a3b8", font: fontConfig },
+        title: { display: true, text: "RUL (Hours)", color: "#94a3b8", font: fontConfig }
+      },
+      yAnomaly: {
+        type: 'linear',
+        position: 'right',
+        min: 0,
+        max: 100,
+        grid: { display: false },
+        ticks: { color: "#ef4444", font: fontConfig },
+        title: { display: true, text: "Anomaly %", color: "#ef4444", font: fontConfig }
       }
     }
   });
 
-  // 2. Anomaly & Vibration Graph
-  const ctxAnom = document.getElementById("chartAnomaly").getContext("2d");
-  const xgbAnomProbs = traj.map(d => d.xgb_anomaly_prob);
-  const vibVals = traj.map(d => d.vibration_hz * 18); // scaled for visual alignment
+  // 1. Model 1: Random Forest Dedicated Chart
+  const ctxRf = document.getElementById("chartModelRfCanvas");
+  if (ctxRf) {
+    state.charts.rf = new Chart(ctxRf.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Actual RUL (Datasheet)",
+            data: actualRul,
+            borderColor: "#ffffff",
+            borderWidth: 2,
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Predicted RUL (Random Forest)",
+            data: rfRul,
+            borderColor: "#a855f7",
+            borderWidth: 2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Anomaly Rate (%)",
+            data: rfAnom,
+            borderColor: "#ef4444",
+            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            fill: true,
+            borderWidth: 1.5,
+            pointRadius: 0,
+            yAxisID: 'yAnomaly'
+          }
+        ]
+      },
+      options: createChartOptions("#a855f7")
+    });
+  }
 
-  state.charts.anomaly = new Chart(ctxAnom, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [
-        { label: "Anomaly Probability %", data: xgbAnomProbs, borderColor: "#ef4444", backgroundColor: "rgba(239, 68, 68, 0.15)", fill: true, borderWidth: 1.8, pointRadius: 0 },
-        { label: "Vibration Harmonics", data: vibVals, borderColor: "#10b981", borderWidth: 1.2, pointRadius: 0 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: "#64748b", font: fontConfig, maxTicksLimit: 12 } },
-        y: {
-          min: 0, max: 100,
-          grid: { color: gridColor },
-          ticks: { color: "#64748b", font: fontConfig },
-          title: { display: true, text: "Risk %", color: "#64748b", font: fontConfig }
-        }
-      }
-    }
-  });
+  // 2. Model 2: Ridge Regression Dedicated Chart
+  const ctxRidge = document.getElementById("chartModelRidgeCanvas");
+  if (ctxRidge) {
+    state.charts.ridge = new Chart(ctxRidge.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Actual RUL (Datasheet)",
+            data: actualRul,
+            borderColor: "#ffffff",
+            borderWidth: 2,
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Predicted RUL (Ridge Regression)",
+            data: ridgeRul,
+            borderColor: "#f59e0b",
+            borderWidth: 2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Anomaly Rate (%)",
+            data: ridgeAnom,
+            borderColor: "#ef4444",
+            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            fill: true,
+            borderWidth: 1.5,
+            pointRadius: 0,
+            yAxisID: 'yAnomaly'
+          }
+        ]
+      },
+      options: createChartOptions("#f59e0b")
+    });
+  }
 
-  // 3. Health Degradation Curve
-  const ctxHealth = document.getElementById("chartHealth").getContext("2d");
-  const actualHealth = traj.map(d => d.actual_health);
-  const xgbHealth = traj.map(d => d.xgb_health);
-
-  state.charts.health = new Chart(ctxHealth, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [
-        { label: "Actual Health %", data: actualHealth, borderColor: "#ffffff", borderWidth: 2, pointRadius: 0 },
-        { label: "XGBoost Health %", data: xgbHealth, borderColor: "#06b6d4", borderWidth: 1.8, pointRadius: 0 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: "#64748b", font: fontConfig, maxTicksLimit: 12 } },
-        y: {
-          min: 0, max: 100,
-          grid: { color: gridColor },
-          ticks: { color: "#64748b", font: fontConfig },
-          title: { display: true, text: "Health %", color: "#64748b", font: fontConfig }
-        }
-      }
-    }
-  });
-}
-
-// ===================================================================
-// SCRUBBER (INTERACTIVE TIMELINE REPLAY)
-// ===================================================================
-function initScrubber() {
-  const scrubber = document.getElementById("telemetryScrubber");
-  const idxLabel = document.getElementById("scrubberIndex");
-
-  scrubber.addEventListener("input", (e) => {
-    const idx = parseInt(e.target.value);
-    state.currentPointIndex = idx;
-    idxLabel.textContent = `Point #${idx + 1} / 150`;
-
-    if (state.trajectory && state.trajectory[idx]) {
-      const point = state.trajectory[idx];
-      TELEMETRY_DEFS.forEach((def, i) => {
-        const val = point.features[i];
-        state.currentFeatures[i] = val;
-        const slider = document.getElementById(`slider-${def.key}`);
-        if (slider) slider.value = val;
-        const valEl = document.getElementById(`val-${def.key}`);
-        if (valEl) valEl.textContent = `${formatNumber(val)} ${def.unit}`;
-      });
-      updateTwinVisuals();
-      runMultiModelDiagnosis();
-    }
-  });
+  // 3. Model 3: XGBoost Dedicated Chart
+  const ctxXgb = document.getElementById("chartModelXgbCanvas");
+  if (ctxXgb) {
+    state.charts.xgb = new Chart(ctxXgb.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Actual RUL (Datasheet)",
+            data: actualRul,
+            borderColor: "#ffffff",
+            borderWidth: 2,
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Predicted RUL (XGBoost)",
+            data: xgbRul,
+            borderColor: "#06b6d4",
+            borderWidth: 2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            yAxisID: 'yRul'
+          },
+          {
+            label: "Anomaly Rate (%)",
+            data: xgbAnom,
+            borderColor: "#ef4444",
+            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            fill: true,
+            borderWidth: 1.5,
+            pointRadius: 0,
+            yAxisID: 'yAnomaly'
+          }
+        ]
+      },
+      options: createChartOptions("#06b6d4")
+    });
+  }
 }
 
 // ===================================================================
@@ -641,7 +618,6 @@ function initScenarioButtons() {
 }
 
 function applyScenario(scenario) {
-  // Base copy
   const b = [...TELEMETRY_DEFS.map(d => d.baseline)];
 
   if (scenario === "cavitation") {
@@ -665,12 +641,11 @@ function applyScenario(scenario) {
     b[11] = 1465;  // Hunting RPM
   }
 
-  // Update slider inputs and state
   TELEMETRY_DEFS.forEach((def, i) => {
     state.currentFeatures[i] = b[i];
-    const slider = document.getElementById(`slider-${def.key}`);
+    const slider = document.getElementById(`modal-slider-${def.key}`);
     if (slider) slider.value = b[i];
-    const valEl = document.getElementById(`val-${def.key}`);
+    const valEl = document.getElementById(`modal-val-${def.key}`);
     if (valEl) valEl.textContent = `${formatNumber(b[i])} ${def.unit}`;
   });
 
@@ -679,17 +654,64 @@ function applyScenario(scenario) {
 }
 
 // ===================================================================
-// MODALS (BENCHMARK TABLE & WORK ORDER REPORT)
+// MODALS (SLIDERS & WORK ORDER REPORT)
 // ===================================================================
+function initModalSliders() {
+  const container = document.getElementById("modalSlidersContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+  TELEMETRY_DEFS.forEach((def, index) => {
+    const row = document.createElement("div");
+    row.className = "telemetry-row";
+    row.innerHTML = `
+      <div class="telemetry-head">
+        <span class="telemetry-label">${def.label}</span>
+        <span class="telemetry-val" id="modal-val-${def.key}">${formatNumber(state.currentFeatures[index])} ${def.unit}</span>
+      </div>
+      <input type="range" class="telemetry-slider" id="modal-slider-${def.key}"
+             min="${def.min}" max="${def.max}" step="${def.step}" value="${state.currentFeatures[index]}">
+    `;
+    container.appendChild(row);
+
+    const input = row.querySelector("input");
+    input.addEventListener("input", (e) => {
+      const val = parseFloat(e.target.value);
+      state.currentFeatures[index] = val;
+      document.getElementById(`modal-val-${def.key}`).textContent = `${formatNumber(val)} ${def.unit}`;
+      updateTwinVisuals();
+      runMultiModelDiagnosis();
+    });
+  });
+
+  document.getElementById("resetModalSlidersBtn").addEventListener("click", () => {
+    TELEMETRY_DEFS.forEach((def, idx) => {
+      state.currentFeatures[idx] = def.baseline;
+      const s = document.getElementById(`modal-slider-${def.key}`);
+      if (s) s.value = def.baseline;
+      const v = document.getElementById(`modal-val-${def.key}`);
+      if (v) v.textContent = `${formatNumber(def.baseline)} ${def.unit}`;
+    });
+    updateTwinVisuals();
+    runMultiModelDiagnosis();
+  });
+
+  document.getElementById("applyModalSlidersBtn").addEventListener("click", () => {
+    document.getElementById("slidersModal").classList.remove("open");
+    runMultiModelDiagnosis();
+  });
+}
+
 function initModals() {
-  // Benchmark modal
-  const benchmarkModal = document.getElementById("benchmarkModal");
-  document.getElementById("benchmarkModalBtn").addEventListener("click", () => {
-    benchmarkModal.classList.add("open");
-  });
-  document.getElementById("closeBenchmarkModal").addEventListener("click", () => {
-    benchmarkModal.classList.remove("open");
-  });
+  // Sliders modal
+  const slidersModal = document.getElementById("slidersModal");
+  const openSlidersBtn = document.getElementById("openSlidersModalBtn");
+  const openDrawerBtn = document.getElementById("openDrawerBtn");
+  const closeSlidersBtn = document.getElementById("closeSlidersModal");
+
+  if (openSlidersBtn) openSlidersBtn.addEventListener("click", () => slidersModal.classList.add("open"));
+  if (openDrawerBtn) openDrawerBtn.addEventListener("click", () => slidersModal.classList.add("open"));
+  if (closeSlidersBtn) closeSlidersBtn.addEventListener("click", () => slidersModal.classList.remove("open"));
 
   // Report modal
   const reportModal = document.getElementById("reportModal");
@@ -732,7 +754,7 @@ function buildInspectionReport() {
         <div>Timestamp: ${now.toISOString()} | Standards: ISO 10816-3 Class II | Asset ID: PMP-TWIN-001</div>
       </div>
 
-      <h4 style="color:#38bdf8; margin-top:12px;">1. TELEMETRY AUDIT LOG</h4>
+      <h4 style="color:#38bdf8; margin-top:12px;">1. ACTIVE SENSOR TELEMETRY</h4>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#0f172a; padding:10px; border-radius:4px;">
         <div>Motor Speed: <strong>${Math.round(f[11])} RPM</strong></div>
         <div>Vibration Frequency: <strong>${f[8].toFixed(2)} Hz</strong></div>

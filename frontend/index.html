@@ -37,12 +37,12 @@
         <span id="connStatusText">INITIALIZING ENGINE...</span>
       </div>
 
-      <!-- Presentation & Action Buttons -->
+      <!-- Action Buttons -->
       <button id="seminarModeBtn" class="btn-action btn-outline" title="Optimize view for seminar projectors">
         📽️ Seminar Mode
       </button>
-      <button id="benchmarkModalBtn" class="btn-action btn-outline">
-        📊 Model Accuracy Table
+      <button id="openSlidersModalBtn" class="btn-action btn-outline" title="Adjust telemetry sliders manually">
+        🎛️ Tune Telemetry
       </button>
       <button id="generateReportBtn" class="btn-action btn-primary">
         📋 Work Order Report
@@ -78,10 +78,10 @@
     </div>
   </section>
 
-  <!-- MAIN SCADA DASHBOARD WORKSPACE -->
-  <main class="dashboard-grid">
+  <!-- MAIN SCADA DASHBOARD WORKSPACE (2-COLUMN FOCUSED LAYOUT) -->
+  <main class="dashboard-grid-2col">
 
-    <!-- COLUMN 1: INTERACTIVE DIGITAL TWIN SCHEMATIC & FAILURE INJECTIONS -->
+    <!-- LEFT COLUMN: PHYSICAL DIGITAL TWIN SCHEMATIC & FAULT INJECTIONS -->
     <section class="card panel-twin">
       <div class="card-header">
         <div class="card-title">
@@ -91,7 +91,7 @@
         <span class="twin-state-badge" id="pumpOperatingState">RUNNING</span>
       </div>
 
-      <!-- Interactive Cross-Section SVG/Canvas Schematic -->
+      <!-- Interactive Cross-Section SVG Schematic -->
       <div class="twin-viewport" id="twinContainer">
         <svg id="pumpSvg" viewBox="0 0 460 270" class="pump-schematic">
           <defs>
@@ -109,10 +109,6 @@
               <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8" />
               <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.2" />
             </linearGradient>
-            <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
           </defs>
 
           <!-- Motor Stator Casing & Cooling Fins -->
@@ -128,15 +124,14 @@
           <rect x="55" y="45" width="60" height="25" rx="3" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
           <text x="85" y="61" fill="#38bdf8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">MOTOR 3-PH</text>
 
-          <!-- Motor Windings (Hotspot) -->
+          <!-- Motor Windings (Clickable Hotspot) -->
           <rect id="hotspotWinding" class="twin-hotspot" x="35" y="85" width="110" height="90" rx="4" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="1.2" />
           <text x="90" y="135" fill="#f59e0b" font-size="9" font-family="'JetBrains Mono'" font-weight="bold" text-anchor="middle">STATOR WINDING</text>
 
           <!-- Drive Shaft -->
           <rect id="driveShaft" x="155" y="122" width="165" height="16" fill="url(#shaftGrad)" stroke="#475569" stroke-width="1" />
 
-          <!-- Bearing Housings: Drive End (DE) and Non-Drive End (NDE) -->
-          <!-- DE Bearing -->
+          <!-- Drive End (DE) Bearing (Clickable Hotspot) -->
           <g id="hotspotBearingDE" class="twin-hotspot" transform="translate(170, 110)">
             <rect x="0" y="0" width="28" height="40" rx="3" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
             <circle cx="14" cy="12" r="4.5" fill="#10b981" />
@@ -144,7 +139,7 @@
             <text x="14" y="-4" fill="#94a3b8" font-size="7" font-family="'JetBrains Mono'" text-anchor="middle">DE BRG</text>
           </g>
 
-          <!-- Mechanical Seal Chamber -->
+          <!-- Mechanical Seal Chamber (Clickable Hotspot) -->
           <g id="hotspotSeal" class="twin-hotspot" transform="translate(260, 108)">
             <rect x="0" y="0" width="30" height="44" rx="2" fill="#1e1e2f" stroke="#06b6d4" stroke-width="1.5" />
             <line x1="15" y1="2" x2="15" y2="42" stroke="#06b6d4" stroke-width="2" stroke-dasharray="2 2" />
@@ -156,10 +151,10 @@
           
           <!-- Discharge Nozzle (Top) -->
           <rect x="315" y="25" width="45" height="42" fill="#1e293b" stroke="#64748b" stroke-width="2" />
-          <path d="M 337 60 L 337 32" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)" />
+          <path d="M 337 60 L 337 32" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
           <text x="337" y="20" fill="#38bdf8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">DISCHARGE (P_out)</text>
 
-          <!-- Impeller Rotating Head -->
+          <!-- Impeller Rotating Head (Clickable Hotspot) -->
           <g id="hotspotImpeller" class="twin-hotspot" transform="translate(340, 150)">
             <circle cx="0" cy="0" r="42" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="4 4" />
             <g id="svgImpellerBlades" class="rotating-blades">
@@ -194,15 +189,14 @@
           <span class="hotspot-health-tag" id="hotspotScore">Health: 98.2%</span>
         </div>
         <p class="hotspot-desc" id="hotspotDesc">
-          Hydrodynamic oil film nominal. Vibration frequency is well below ISO 10816 4.5 Hz threshold limit.
+          Hydrodynamic oil film nominal. Vibration frequency is well below ISO 10816 4.5 Hz threshold limit. Click any part on the schematic to inspect wear details.
         </p>
       </div>
 
       <!-- SEMINAR INTERACTIVE FAULT INJECTION CONTROLS -->
       <div class="fault-injection-panel">
         <div class="panel-subhead">
-          <span>⚡ Seminar Fault Injections (Simulate Real Breakdowns)</span>
-          <span class="help-tooltip" title="Inject dynamic faults to evaluate how all 3 ML models react">ℹ️</span>
+          <span>⚡ Seminar Fault Injections (Simulate Operational Breakdown)</span>
         </div>
         <div class="fault-buttons-grid">
           <button class="btn-scenario active" data-scenario="nominal">
@@ -226,36 +220,33 @@
         </div>
       </div>
 
-      <!-- HISTORICAL TELEMETRY TIMELINE SCRUBBER -->
-      <div class="timeline-scrubber-box">
-        <div class="scrubber-head">
-          <span class="scrubber-title">⏱️ Test Dataset Replay Scrubber (150 Real Points)</span>
-          <span class="scrubber-idx" id="scrubberIndex">Point #1 / 150</span>
+      <!-- CURRENT TELEMETRY SNAPSHOT CARD -->
+      <div class="telemetry-snapshot-box">
+        <div class="snapshot-header">
+          <span>📋 Active Telemetry Parameters</span>
+          <button class="btn-micro" id="openDrawerBtn">🎛️ Adjust Sliders</button>
         </div>
-        <input type="range" id="telemetryScrubber" min="0" max="149" value="0" class="slider-scrubber">
-        <div class="scrubber-labels">
-          <span>Beginning of Life (High RUL)</span>
-          <span>End of Life (Failure Imminent)</span>
+        <div class="snapshot-grid" id="telemetrySnapshotGrid">
+          <!-- Injected dynamically by app.js -->
         </div>
       </div>
     </section>
 
-    <!-- COLUMN 2: 3-MODEL CONCURRENT PREDICTION MATRIX -->
-    <section class="card panel-models">
+    <!-- RIGHT COLUMN: 3 MODELS OUTPUT + ACCURACY TABLE + 3 DEDICATED MODEL GRAPHS -->
+    <section class="card panel-main-suite">
+      
+      <!-- 1. REAL-TIME 3-MODEL OUTPUT CARDS -->
       <div class="card-header">
         <div class="card-title">
-          <span class="badge-tag">LAYER 1 &amp; 2</span>
-          <h2>🤖 3-Model Prediction &amp; Accuracy Comparison</h2>
+          <span class="badge-tag">OUTPUT</span>
+          <h2>🤖 Real-Time Inference Output (All 3 Models)</h2>
         </div>
-        <div class="model-view-toggle">
-          <span class="tag-live">SIMULTANEOUS INFERENCE</span>
-        </div>
+        <span class="tag-live">SIMULTANEOUS MULTI-MODEL INFERENCE</span>
       </div>
 
-      <!-- 3 MODEL COMPARISON CARDS -->
       <div class="models-tri-grid">
         
-        <!-- MODEL 1: RANDOM FOREST (ORIGINAL) -->
+        <!-- MODEL 1: RANDOM FOREST -->
         <div class="model-card card-rf" id="cardModelRf">
           <div class="model-badge-row">
             <span class="model-badge badge-rf">MODEL 1: RANDOM FOREST</span>
@@ -274,13 +265,13 @@
             <div class="progress-track"><div id="rfHealthBar" class="progress-bar bg-rf" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Prob</label><span id="rfAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Anomaly Rate</label><span id="rfAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999999</span></div>
-            <div class="stat-mini"><label>Test MAE</label><span class="text-cyan">0.12 hrs</span></div>
+            <div class="stat-mini"><label>MAE vs Actual</label><span class="text-cyan">0.12 hrs</span></div>
           </div>
         </div>
 
-        <!-- MODEL 2: REGRESSION (RIDGE / LINEAR) -->
+        <!-- MODEL 2: RIDGE REGRESSION -->
         <div class="model-card card-ridge" id="cardModelRidge">
           <div class="model-badge-row">
             <span class="model-badge badge-ridge">MODEL 2: RIDGE REGRESSION</span>
@@ -299,16 +290,16 @@
             <div class="progress-track"><div id="ridgeHealthBar" class="progress-bar bg-ridge" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Prob</label><span id="ridgeAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Anomaly Rate</label><span id="ridgeAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-amber">0.983445</span></div>
-            <div class="stat-mini"><label>Test MAE</label><span class="text-amber">36.71 hrs</span></div>
+            <div class="stat-mini"><label>MAE vs Actual</label><span class="text-amber">36.71 hrs</span></div>
           </div>
         </div>
 
-        <!-- MODEL 3: XGBOOST (CHOICE OF MODEL) -->
+        <!-- MODEL 3: XGBOOST (RECOMMENDED) -->
         <div class="model-card card-xgb active-benchmark" id="cardModelXgb">
           <div class="model-badge-row">
-            <span class="model-badge badge-xgb">MODEL 3: XGBOOST (PHM SOTA)</span>
+            <span class="model-badge badge-xgb">MODEL 3: XGBOOST (OUR CHOICE)</span>
             <span class="model-paradigm">Gradient Boosted Trees</span>
           </div>
           <div class="model-rul-section">
@@ -324,190 +315,163 @@
             <div class="progress-track"><div id="xgbHealthBar" class="progress-bar bg-xgb" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Prob</label><span id="xgbAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Anomaly Rate</label><span id="xgbAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999989</span></div>
-            <div class="stat-mini"><label>Test MAE</label><span class="text-cyan">0.80 hrs</span></div>
+            <div class="stat-mini"><label>MAE vs Actual</label><span class="text-cyan">0.80 hrs</span></div>
           </div>
         </div>
 
       </div>
 
-      <!-- CONSENSUS DELTA & REASONING -->
-      <div class="consensus-detail-card">
-        <div class="delta-header">
-          <span class="delta-title">🔍 Scientific Model Comparison Insight (For Seminar Presentation)</span>
-          <span class="badge-consensus" id="consensusTag">Consensus Delta: 0.8 hrs</span>
+      <!-- 2. DIRECT ON-PAGE ACCURACY BENCHMARK TABLE (W.R.T. GIVEN DATASET) -->
+      <div class="benchmark-table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">
+            <span class="badge-tag">ACCURACY</span>
+            <h3>📊 Accuracy of the 3 ML Models with Respect to the Given Dataset (4,286 Test Holdout Samples)</h3>
+          </div>
+          <span class="dataset-source-tag">DATASET: converted_file.csv (21,429 rows)</span>
         </div>
-        <p class="delta-text" id="consensusText">
-          Loading multi-model comparative reasoning engine...
-        </p>
+        <div class="table-responsive">
+          <table class="accuracy-benchmark-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Model Paradigm</th>
+                <th>R² Score (Accuracy)</th>
+                <th>MAE vs Actual RUL</th>
+                <th>RMSE vs Actual RUL</th>
+                <th>Anomaly Detection Acc.</th>
+                <th>Anomaly F1-Score</th>
+                <th>Edge Latency</th>
+                <th>Verdict</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong class="color-text-rf">Model 1: Random Forest</strong></td>
+                <td>Bagging Ensemble (120 Trees)</td>
+                <td class="text-emerald"><strong>0.999999</strong></td>
+                <td class="text-emerald"><strong>0.12 hrs</strong> (~7 min)</td>
+                <td>0.27 hrs</td>
+                <td class="text-emerald"><strong>100.00%</strong></td>
+                <td>1.0000</td>
+                <td>0.0460 ms</td>
+                <td><span class="verdict-tag verdict-good">High Precision</span></td>
+              </tr>
+              <tr>
+                <td><strong class="color-text-ridge">Model 2: Ridge Regression</strong></td>
+                <td>L2-Regularized Linear Model</td>
+                <td class="text-amber"><strong>0.983445</strong></td>
+                <td class="text-amber"><strong>36.71 hrs</strong> (~1.5 days)</td>
+                <td>46.14 hrs</td>
+                <td>96.94%</td>
+                <td>0.8927</td>
+                <td class="text-emerald"><strong>0.0019 ms</strong></td>
+                <td><span class="verdict-tag verdict-linear">Linear Limits (36.7h bias)</span></td>
+              </tr>
+              <tr class="row-highlight">
+                <td><strong class="color-text-xgb">Model 3: XGBoost (Our Choice)</strong></td>
+                <td>Gradient Boosted Decision Trees</td>
+                <td class="text-emerald"><strong>0.999989</strong></td>
+                <td class="text-emerald"><strong>0.80 hrs</strong> (~48 min)</td>
+                <td>1.17 hrs</td>
+                <td class="text-emerald"><strong>99.91%</strong></td>
+                <td>0.9968</td>
+                <td class="text-emerald"><strong>0.0030 ms</strong></td>
+                <td><span class="verdict-tag verdict-recommended">⭐ Recommended (15× Faster)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- 3 SYNCHRONIZED INDUSTRIAL CHARTS -->
-      <div class="charts-container">
+      <!-- 3. THREE DEDICATED GRAPHS FOR EACH MODEL (ACTUAL RUL vs PREDICTED RUL vs ANOMALY RATE) -->
+      <div class="three-graphs-container">
         
-        <!-- CHART 1: RUL TRAJECTORY -->
-        <div class="chart-wrapper">
-          <div class="chart-header-row">
-            <span class="chart-name">📈 Remaining Useful Life (RUL): Ground Truth vs 3 Models</span>
-            <div class="chart-legend-custom">
-              <span class="legend-chip color-actual">Actual Ground Truth</span>
-              <span class="legend-chip color-rf">Random Forest</span>
-              <span class="legend-chip color-ridge">Ridge Regr.</span>
-              <span class="legend-chip color-xgb">XGBoost</span>
+        <!-- GRAPH 1: RANDOM FOREST MODEL GRAPH -->
+        <div class="dedicated-chart-card">
+          <div class="dedicated-chart-head">
+            <div class="chart-title-group">
+              <span class="chart-model-chip badge-rf">MODEL 1: RANDOM FOREST</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+            </div>
+            <div class="dedicated-legend">
+              <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
+              <span class="leg-item"><span class="leg-box leg-rf"></span> RF Predicted RUL</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
             </div>
           </div>
-          <div class="canvas-holder">
-            <canvas id="chartRul"></canvas>
+          <div class="dedicated-canvas-holder">
+            <canvas id="chartModelRfCanvas"></canvas>
           </div>
         </div>
 
-        <!-- CHART 2: ANOMALY PROBABILITY & VIBRATION BOUNDARY -->
-        <div class="chart-wrapper">
-          <div class="chart-header-row">
-            <span class="chart-name">⚠️ Anomaly Detection Risk &amp; Vibration Harmonics Curve</span>
-            <span class="chart-alert-tag" id="chartAnomalyStatus">NORMAL REGIME</span>
+        <!-- GRAPH 2: RIDGE REGRESSION MODEL GRAPH -->
+        <div class="dedicated-chart-card">
+          <div class="dedicated-chart-head">
+            <div class="chart-title-group">
+              <span class="chart-model-chip badge-ridge">MODEL 2: RIDGE REGRESSION</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+            </div>
+            <div class="dedicated-legend">
+              <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
+              <span class="leg-item"><span class="leg-box leg-ridge"></span> Ridge Predicted RUL</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
+            </div>
           </div>
-          <div class="canvas-holder">
-            <canvas id="chartAnomaly"></canvas>
+          <div class="dedicated-canvas-holder">
+            <canvas id="chartModelRidgeCanvas"></canvas>
           </div>
         </div>
 
-        <!-- CHART 3: HEALTH SCORE & DEGRADATION CURVE -->
-        <div class="chart-wrapper">
-          <div class="chart-header-row">
-            <span class="chart-name">🛡️ Overall Health Degradation Curve (100% → 0% Failure)</span>
-            <span class="chart-metric-tag" id="currentHealthTag">Current: 98.5%</span>
+        <!-- GRAPH 3: XGBOOST MODEL GRAPH -->
+        <div class="dedicated-chart-card">
+          <div class="dedicated-chart-head">
+            <div class="chart-title-group">
+              <span class="chart-model-chip badge-xgb">MODEL 3: XGBOOST (OUR CHOICE)</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+            </div>
+            <div class="dedicated-legend">
+              <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
+              <span class="leg-item"><span class="leg-box leg-xgb"></span> XGBoost Predicted RUL</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
+            </div>
           </div>
-          <div class="canvas-holder">
-            <canvas id="chartHealth"></canvas>
+          <div class="dedicated-canvas-holder">
+            <canvas id="chartModelXgbCanvas"></canvas>
           </div>
         </div>
 
       </div>
-    </section>
 
-    <!-- COLUMN 3: 13-PARAMETER CALIBRATED TELEMETRY CONTROLS -->
-    <section class="card panel-telemetry">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="badge-tag">SENSORS</span>
-          <h2>🎛️ Physical Input Telemetry (13 Features)</h2>
-        </div>
-        <button id="resetTelemetryBtn" class="btn-micro" title="Reset all sliders to nominal baseline">
-          ↺ Reset Baseline
-        </button>
-      </div>
-
-      <div class="telemetry-scroll-area" id="slidersContainer">
-        <!-- Sliders injected dynamically by app.js -->
-      </div>
-
-      <div class="telemetry-actions">
-        <button id="runDiagnosisBtn" class="btn-diagnose">
-          🔍 EXECUTE MULTI-MODEL DIAGNOSIS
-        </button>
-      </div>
-
-      <!-- ROOT CAUSE FEATURE IMPORTANCE BREAKDOWN -->
-      <div class="factors-card">
-        <div class="factors-head">
-          <span>🧠 Feature Importance (SHAP / Tree Split Weight)</span>
-        </div>
-        <div class="factors-list" id="factorsList">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
     </section>
 
   </main>
 
-  <!-- ACCURACY BENCHMARK MODAL DIALOG (FOR SEMINAR JUDGES / AUDIENCE) -->
-  <div class="modal-overlay" id="benchmarkModal">
-    <div class="modal-content">
+  <!-- MODAL: MANUAL TELEMETRY SLIDERS DRAWER -->
+  <div class="modal-overlay" id="slidersModal">
+    <div class="modal-content modal-sliders-content">
       <div class="modal-header">
-        <h3>📊 Comprehensive ML Model Benchmark (Evaluated on 4,286 Real Test Samples)</h3>
-        <button class="modal-close" id="closeBenchmarkModal">&times;</button>
+        <h3>🎛️ Manual Telemetry Calibration Sliders (13 Physical Sensor Features)</h3>
+        <button class="modal-close" id="closeSlidersModal">&times;</button>
       </div>
       <div class="modal-body">
         <p class="modal-intro">
-          This benchmark was generated by training and testing all 3 architectures on <strong>21,429 rows of real centrifugal motor telemetry</strong> with an 80/20 train-test split.
+          Adjust physical pump and motor parameters to test real-time inference responses across all 3 models:
         </p>
-        <table class="benchmark-table">
-          <thead>
-            <tr>
-              <th>Evaluation Metric</th>
-              <th>Model 1: Random Forest</th>
-              <th>Model 2: Ridge Regression</th>
-              <th>Model 3: XGBoost (Our Choice)</th>
-              <th>Industrial Takeaway</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Architecture</strong></td>
-              <td>Bagged Ensembles (120 Trees)</td>
-              <td>L2 Linear Convex Optimization</td>
-              <td>Gradient Boosted Decision Trees</td>
-              <td>Non-linear trees vs Linear hyperplane</td>
-            </tr>
-            <tr>
-              <td><strong>RUL R² Score</strong></td>
-              <td class="text-emerald"><strong>0.999999</strong></td>
-              <td class="text-amber">0.983445</td>
-              <td class="text-emerald"><strong>0.999989</strong></td>
-              <td>Tree models capture sensor saturation curves</td>
-            </tr>
-            <tr>
-              <td><strong>RUL MAE (Mean Error)</strong></td>
-              <td class="text-emerald"><strong>0.12 hrs</strong> (~7 min)</td>
-              <td class="text-amber">36.71 hrs (~1.5 days)</td>
-              <td class="text-emerald"><strong>0.80 hrs</strong> (~48 min)</td>
-              <td>Ridge lacks non-linear interaction terms</td>
-            </tr>
-            <tr>
-              <td><strong>RUL RMSE</strong></td>
-              <td>0.27 hrs</td>
-              <td>46.14 hrs</td>
-              <td>1.17 hrs</td>
-              <td>XGBoost and RF have near-zero outlier variance</td>
-            </tr>
-            <tr>
-              <td><strong>Anomaly Classification Acc.</strong></td>
-              <td class="text-emerald">100.00%</td>
-              <td>96.94%</td>
-              <td class="text-emerald">99.91%</td>
-              <td>All 3 models accurately detect failure boundaries</td>
-            </tr>
-            <tr>
-              <td><strong>Anomaly F1-Score</strong></td>
-              <td>1.0000</td>
-              <td>0.8927</td>
-              <td>0.9968</td>
-              <td>XGBoost balances precision &amp; recall near perfection</td>
-            </tr>
-            <tr>
-              <td><strong>Inference Latency (per point)</strong></td>
-              <td>0.046 ms</td>
-              <td class="text-emerald"><strong>0.0019 ms</strong></td>
-              <td class="text-emerald"><strong>0.0030 ms</strong></td>
-              <td>XGBoost is 15x faster than RF for Edge IoT deployment</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div class="benchmark-summary-box">
-          <h4>💡 Key Engineering Conclusion for Seminar Judges:</h4>
-          <p>
-            While Ridge Regression provides an analytical, closed-form parametric model, its linear assumptions cause an average error of <strong>36.7 hours</strong> because pump degradation is inherently non-linear. 
-            <strong>XGBoost</strong> and <strong>Random Forest</strong> achieve exceptional precision (<strong>R² &gt; 0.9999</strong>). Furthermore, <strong>XGBoost provides 15× faster edge inference speed (0.003 ms)</strong>, making it the superior architecture for mission-critical industrial SCADA gateways!
-          </p>
+        <div class="modal-sliders-grid" id="modalSlidersContainer">
+          <!-- Injected dynamically by app.js -->
         </div>
+      </div>
+      <div class="modal-footer">
+        <button id="resetModalSlidersBtn" class="btn-action btn-outline">↺ Reset Nominal Baseline</button>
+        <button id="applyModalSlidersBtn" class="btn-action btn-primary">🔍 Execute Multi-Model Inference</button>
       </div>
     </div>
   </div>
 
-  <!-- WORK ORDER REPORT MODAL -->
+  <!-- MODAL: WORK ORDER REPORT -->
   <div class="modal-overlay" id="reportModal">
     <div class="modal-content report-print-content">
       <div class="modal-header">
