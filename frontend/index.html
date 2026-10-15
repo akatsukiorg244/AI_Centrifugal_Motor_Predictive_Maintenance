@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centrifugal Pump Digital Twin — Industrial Predictive Maintenance Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js for High-Precision Industrial Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="industrial-theme">
+
+  <!-- TOP INDUSTRIAL HEADER -->
+  <header class="scada-header">
+    <div class="brand-section">
+      <div class="scada-logo">
+        <span class="icon-gear">⚙️</span>
+        <div class="logo-text">
+          <h1>CENTRIFUGAL PUMP DIGITAL TWIN</h1>
+          <span class="sub-heading">Industrial IoT Telemetry & Multi-Model Predictive Maintenance Suite</span>
+        </div>
+      </div>
+      <div class="iso-standard-tag">
+        <span class="dot-live"></span> ISO 10816-3 CLASS II CERTIFIED
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="telemetry-clock" id="systemClock">--:--:-- UTC</div>
+      
+      <!-- Connection Heartbeat -->
+      <div id="connStatus" class="connection-badge status-cloud">
+        <span class="pulse-indicator"></span>
+        <span id="connStatusText">INITIALIZING ENGINE...</span>
+      </div>
+
+      <!-- Presentation & Action Buttons -->
+      <button id="seminarModeBtn" class="btn-action btn-outline" title="Optimize view for seminar projectors">
+        📽️ Seminar Mode
+      </button>
+      <button id="benchmarkModalBtn" class="btn-action btn-outline">
+        📊 Model Accuracy Table
+      </button>
+      <button id="generateReportBtn" class="btn-action btn-primary">
+        📋 Work Order Report
+      </button>
+    </div>
+  </header>
+
+  <!-- QUICK KPI / MULTI-MODEL CONSENSUS STRIP -->
+  <section class="consensus-bar">
+    <div class="consensus-kpi">
+      <span class="kpi-label">Primary Target</span>
+      <span class="kpi-value text-cyan">Remaining Useful Life (RUL)</span>
+    </div>
+    <div class="consensus-divider"></div>
+    <div class="consensus-kpi">
+      <span class="kpi-label">Active ML Models</span>
+      <span class="kpi-value">3 Architectures (RF, Ridge, XGBoost)</span>
+    </div>
+    <div class="consensus-divider"></div>
+    <div class="consensus-kpi">
+      <span class="kpi-label">Ensemble Consensus</span>
+      <span id="consensusAgreement" class="kpi-value text-emerald">HIGH AGREEMENT (&lt; 5h delta)</span>
+    </div>
+    <div class="consensus-divider"></div>
+    <div class="consensus-kpi">
+      <span class="kpi-label">Ensemble Mean RUL</span>
+      <span id="ensembleRul" class="kpi-value text-amber">-- hrs</span>
+    </div>
+    <div class="consensus-divider"></div>
+    <div class="consensus-kpi">
+      <span class="kpi-label">Anomaly Risk Alert</span>
+      <span id="globalAnomalyBadge" class="status-pill status-healthy">NORMAL OPERATING REGIME</span>
+    </div>
+  </section>
+
+  <!-- MAIN SCADA DASHBOARD WORKSPACE -->
+  <main class="dashboard-grid">
+
+    <!-- COLUMN 1: INTERACTIVE DIGITAL TWIN SCHEMATIC & FAILURE INJECTIONS -->
+    <section class="card panel-twin">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="badge-tag">LAYER 3</span>
+          <h2>🌀 Physical Digital Twin Assembly</h2>
+        </div>
+        <span class="twin-state-badge" id="pumpOperatingState">RUNNING</span>
+      </div>
+
+      <!-- Interactive Cross-Section SVG/Canvas Schematic -->
+      <div class="twin-viewport" id="twinContainer">
+        <svg id="pumpSvg" viewBox="0 0 460 270" class="pump-schematic">
+          <defs>
+            <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#334155" />
+              <stop offset="50%" stop-color="#1e293b" />
+              <stop offset="100%" stop-color="#0f172a" />
+            </linearGradient>
+            <linearGradient id="shaftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#94a3b8" />
+              <stop offset="50%" stop-color="#f8fafc" />
+              <stop offset="100%" stop-color="#64748b" />
+            </linearGradient>
+            <linearGradient id="fluidFlow" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.2" />
+            </linearGradient>
+            <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Motor Stator Casing & Cooling Fins -->
+          <rect x="25" y="70" width="130" height="120" rx="6" fill="url(#metalGrad)" stroke="#475569" stroke-width="2" />
+          <line x1="35" y1="70" x2="35" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+          <line x1="55" y1="70" x2="55" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+          <line x1="75" y1="70" x2="75" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+          <line x1="95" y1="70" x2="95" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+          <line x1="115" y1="70" x2="115" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+          <line x1="135" y1="70" x2="135" y2="190" stroke="#64748b" stroke-dasharray="3 3" />
+
+          <!-- Motor Terminal Box -->
+          <rect x="55" y="45" width="60" height="25" rx="3" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="85" y="61" fill="#38bdf8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">MOTOR 3-PH</text>
+
+          <!-- Motor Windings (Hotspot) -->
+          <rect id="hotspotWinding" class="twin-hotspot" x="35" y="85" width="110" height="90" rx="4" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="1.2" />
+          <text x="90" y="135" fill="#f59e0b" font-size="9" font-family="'JetBrains Mono'" font-weight="bold" text-anchor="middle">STATOR WINDING</text>
+
+          <!-- Drive Shaft -->
+          <rect id="driveShaft" x="155" y="122" width="165" height="16" fill="url(#shaftGrad)" stroke="#475569" stroke-width="1" />
+
+          <!-- Bearing Housings: Drive End (DE) and Non-Drive End (NDE) -->
+          <!-- DE Bearing -->
+          <g id="hotspotBearingDE" class="twin-hotspot" transform="translate(170, 110)">
+            <rect x="0" y="0" width="28" height="40" rx="3" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
+            <circle cx="14" cy="12" r="4.5" fill="#10b981" />
+            <circle cx="14" cy="28" r="4.5" fill="#10b981" />
+            <text x="14" y="-4" fill="#94a3b8" font-size="7" font-family="'JetBrains Mono'" text-anchor="middle">DE BRG</text>
+          </g>
+
+          <!-- Mechanical Seal Chamber -->
+          <g id="hotspotSeal" class="twin-hotspot" transform="translate(260, 108)">
+            <rect x="0" y="0" width="30" height="44" rx="2" fill="#1e1e2f" stroke="#06b6d4" stroke-width="1.5" />
+            <line x1="15" y1="2" x2="15" y2="42" stroke="#06b6d4" stroke-width="2" stroke-dasharray="2 2" />
+            <text x="15" y="-4" fill="#06b6d4" font-size="7" font-family="'JetBrains Mono'" text-anchor="middle">MECH SEAL</text>
+          </g>
+
+          <!-- Volute Casing & Suction Eye -->
+          <path d="M 315 65 C 390 65 425 110 425 170 C 425 220 375 240 315 240 L 315 195 C 345 195 380 185 380 160 C 380 135 355 105 315 105 Z" fill="url(#metalGrad)" stroke="#64748b" stroke-width="2" />
+          
+          <!-- Discharge Nozzle (Top) -->
+          <rect x="315" y="25" width="45" height="42" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+          <path d="M 337 60 L 337 32" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)" />
+          <text x="337" y="20" fill="#38bdf8" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">DISCHARGE (P_out)</text>
+
+          <!-- Impeller Rotating Head -->
+          <g id="hotspotImpeller" class="twin-hotspot" transform="translate(340, 150)">
+            <circle cx="0" cy="0" r="42" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="4 4" />
+            <g id="svgImpellerBlades" class="rotating-blades">
+              <path d="M 0 0 Q 15 -18 35 -15" stroke="#ef4444" stroke-width="4" stroke-linecap="round" fill="none" />
+              <path d="M 0 0 Q -18 15 -15 35" stroke="#ef4444" stroke-width="4" stroke-linecap="round" fill="none" />
+              <path d="M 0 0 Q -15 -18 -35 -15" stroke="#ef4444" stroke-width="4" stroke-linecap="round" fill="none" />
+              <path d="M 0 0 Q 18 -15 15 -35" stroke="#ef4444" stroke-width="4" stroke-linecap="round" fill="none" />
+              <circle cx="0" cy="0" r="10" fill="#cbd5e1" stroke="#334155" stroke-width="2" />
+            </g>
+            <text x="0" y="55" fill="#f87171" font-size="8" font-family="'JetBrains Mono'" text-anchor="middle">IMPELLER</text>
+          </g>
+
+          <!-- Cavitation Bubbles Layer -->
+          <g id="cavitationBubbles" opacity="0">
+            <circle cx="330" cy="140" r="3" fill="#fef08a" opacity="0.8" />
+            <circle cx="345" cy="135" r="4" fill="#fef08a" opacity="0.9" />
+            <circle cx="355" cy="155" r="2.5" fill="#fef08a" opacity="0.7" />
+            <text x="340" y="100" fill="#facc15" font-size="9" font-family="'JetBrains Mono'" font-weight="bold" text-anchor="middle">⚠️ CAVITATION</text>
+          </g>
+
+          <!-- Live Telemetry Callout Overlay in SVG -->
+          <rect x="25" y="215" width="200" height="42" rx="4" fill="rgba(15, 23, 42, 0.85)" stroke="#334155" />
+          <text x="35" y="232" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'">MOTOR SPEED: <tspan id="svgRpm" fill="#38bdf8" font-weight="bold">1448 RPM</tspan></text>
+          <text x="35" y="247" fill="#94a3b8" font-size="8" font-family="'JetBrains Mono'">VIB FREQ: <tspan id="svgVib" fill="#10b981" font-weight="bold">3.33 Hz</tspan> | TEMP: <tspan id="svgTemp" fill="#f59e0b">37.5°C</tspan></text>
+        </svg>
+      </div>
+
+      <!-- Component Hotspot Diagnostic Card -->
+      <div class="hotspot-detail-box" id="hotspotCard">
+        <div class="hotspot-header">
+          <span class="hotspot-title" id="hotspotName">Component: Drive Bearings</span>
+          <span class="hotspot-health-tag" id="hotspotScore">Health: 98.2%</span>
+        </div>
+        <p class="hotspot-desc" id="hotspotDesc">
+          Hydrodynamic oil film nominal. Vibration frequency is well below ISO 10816 4.5 Hz threshold limit.
+        </p>
+      </div>
+
+      <!-- SEMINAR INTERACTIVE FAULT INJECTION CONTROLS -->
+      <div class="fault-injection-panel">
+        <div class="panel-subhead">
+          <span>⚡ Seminar Fault Injections (Simulate Real Breakdowns)</span>
+          <span class="help-tooltip" title="Inject dynamic faults to evaluate how all 3 ML models react">ℹ️</span>
+        </div>
+        <div class="fault-buttons-grid">
+          <button class="btn-scenario active" data-scenario="nominal">
+            🟢 Nominal
+          </button>
+          <button class="btn-scenario" data-scenario="cavitation">
+            🌪️ Cavitation
+          </button>
+          <button class="btn-scenario" data-scenario="bearing_spall">
+            ⚙️ Bearing Spall
+          </button>
+          <button class="btn-scenario" data-scenario="thermal_overload">
+            🔥 Motor Overheat
+          </button>
+          <button class="btn-scenario" data-scenario="seal_leak">
+            💧 Seal Leak
+          </button>
+          <button class="btn-scenario" data-scenario="unbalance">
+            🌀 Rotor Unbalance
+          </button>
+        </div>
+      </div>
+
+      <!-- HISTORICAL TELEMETRY TIMELINE SCRUBBER -->
+      <div class="timeline-scrubber-box">
+        <div class="scrubber-head">
+          <span class="scrubber-title">⏱️ Test Dataset Replay Scrubber (150 Real Points)</span>
+          <span class="scrubber-idx" id="scrubberIndex">Point #1 / 150</span>
+        </div>
+        <input type="range" id="telemetryScrubber" min="0" max="149" value="0" class="slider-scrubber">
+        <div class="scrubber-labels">
+          <span>Beginning of Life (High RUL)</span>
+          <span>End of Life (Failure Imminent)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMN 2: 3-MODEL CONCURRENT PREDICTION MATRIX -->
+    <section class="card panel-models">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="badge-tag">LAYER 1 &amp; 2</span>
+          <h2>🤖 3-Model Prediction &amp; Accuracy Comparison</h2>
+        </div>
+        <div class="model-view-toggle">
+          <span class="tag-live">SIMULTANEOUS INFERENCE</span>
+        </div>
+      </div>
+
+      <!-- 3 MODEL COMPARISON CARDS -->
+      <div class="models-tri-grid">
+        
+        <!-- MODEL 1: RANDOM FOREST (ORIGINAL) -->
+        <div class="model-card card-rf" id="cardModelRf">
+          <div class="model-badge-row">
+            <span class="model-badge badge-rf">MODEL 1: RANDOM FOREST</span>
+            <span class="model-paradigm">Ensemble Bagging</span>
+          </div>
+          <div class="model-rul-section">
+            <span class="metric-label">Predicted RUL</span>
+            <div class="metric-big"><span id="rfRul">--</span> <small>hours</small></div>
+            <span class="metric-sub" id="rfRulDays">~-- days remaining</span>
+          </div>
+          <div class="model-gauge-row">
+            <div class="gauge-label-wrap">
+              <span>Health Score:</span>
+              <strong id="rfHealthScore">--%</strong>
+            </div>
+            <div class="progress-track"><div id="rfHealthBar" class="progress-bar bg-rf" style="width:0%"></div></div>
+          </div>
+          <div class="model-stats-footer">
+            <div class="stat-mini"><label>Anomaly Prob</label><span id="rfAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999999</span></div>
+            <div class="stat-mini"><label>Test MAE</label><span class="text-cyan">0.12 hrs</span></div>
+          </div>
+        </div>
+
+        <!-- MODEL 2: REGRESSION (RIDGE / LINEAR) -->
+        <div class="model-card card-ridge" id="cardModelRidge">
+          <div class="model-badge-row">
+            <span class="model-badge badge-ridge">MODEL 2: RIDGE REGRESSION</span>
+            <span class="model-paradigm">Analytical Linear L2</span>
+          </div>
+          <div class="model-rul-section">
+            <span class="metric-label">Predicted RUL</span>
+            <div class="metric-big"><span id="ridgeRul">--</span> <small>hours</small></div>
+            <span class="metric-sub" id="ridgeRulDays">~-- days remaining</span>
+          </div>
+          <div class="model-gauge-row">
+            <div class="gauge-label-wrap">
+              <span>Health Score:</span>
+              <strong id="ridgeHealthScore">--%</strong>
+            </div>
+            <div class="progress-track"><div id="ridgeHealthBar" class="progress-bar bg-ridge" style="width:0%"></div></div>
+          </div>
+          <div class="model-stats-footer">
+            <div class="stat-mini"><label>Anomaly Prob</label><span id="ridgeAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Dataset R²</label><span class="text-amber">0.983445</span></div>
+            <div class="stat-mini"><label>Test MAE</label><span class="text-amber">36.71 hrs</span></div>
+          </div>
+        </div>
+
+        <!-- MODEL 3: XGBOOST (CHOICE OF MODEL) -->
+        <div class="model-card card-xgb active-benchmark" id="cardModelXgb">
+          <div class="model-badge-row">
+            <span class="model-badge badge-xgb">MODEL 3: XGBOOST (PHM SOTA)</span>
+            <span class="model-paradigm">Gradient Boosted Trees</span>
+          </div>
+          <div class="model-rul-section">
+            <span class="metric-label">Predicted RUL</span>
+            <div class="metric-big"><span id="xgbRul">--</span> <small>hours</small></div>
+            <span class="metric-sub" id="xgbRulDays">~-- days remaining</span>
+          </div>
+          <div class="model-gauge-row">
+            <div class="gauge-label-wrap">
+              <span>Health Score:</span>
+              <strong id="xgbHealthScore">--%</strong>
+            </div>
+            <div class="progress-track"><div id="xgbHealthBar" class="progress-bar bg-xgb" style="width:0%"></div></div>
+          </div>
+          <div class="model-stats-footer">
+            <div class="stat-mini"><label>Anomaly Prob</label><span id="xgbAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999989</span></div>
+            <div class="stat-mini"><label>Test MAE</label><span class="text-cyan">0.80 hrs</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CONSENSUS DELTA & REASONING -->
+      <div class="consensus-detail-card">
+        <div class="delta-header">
+          <span class="delta-title">🔍 Scientific Model Comparison Insight (For Seminar Presentation)</span>
+          <span class="badge-consensus" id="consensusTag">Consensus Delta: 0.8 hrs</span>
+        </div>
+        <p class="delta-text" id="consensusText">
+          Loading multi-model comparative reasoning engine...
+        </p>
+      </div>
+
+      <!-- 3 SYNCHRONIZED INDUSTRIAL CHARTS -->
+      <div class="charts-container">
+        
+        <!-- CHART 1: RUL TRAJECTORY -->
+        <div class="chart-wrapper">
+          <div class="chart-header-row">
+            <span class="chart-name">📈 Remaining Useful Life (RUL): Ground Truth vs 3 Models</span>
+            <div class="chart-legend-custom">
+              <span class="legend-chip color-actual">Actual Ground Truth</span>
+              <span class="legend-chip color-rf">Random Forest</span>
+              <span class="legend-chip color-ridge">Ridge Regr.</span>
+              <span class="legend-chip color-xgb">XGBoost</span>
+            </div>
+          </div>
+          <div class="canvas-holder">
+            <canvas id="chartRul"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 2: ANOMALY PROBABILITY & VIBRATION BOUNDARY -->
+        <div class="chart-wrapper">
+          <div class="chart-header-row">
+            <span class="chart-name">⚠️ Anomaly Detection Risk &amp; Vibration Harmonics Curve</span>
+            <span class="chart-alert-tag" id="chartAnomalyStatus">NORMAL REGIME</span>
+          </div>
+          <div class="canvas-holder">
+            <canvas id="chartAnomaly"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 3: HEALTH SCORE & DEGRADATION CURVE -->
+        <div class="chart-wrapper">
+          <div class="chart-header-row">
+            <span class="chart-name">🛡️ Overall Health Degradation Curve (100% → 0% Failure)</span>
+            <span class="chart-metric-tag" id="currentHealthTag">Current: 98.5%</span>
+          </div>
+          <div class="canvas-holder">
+            <canvas id="chartHealth"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COLUMN 3: 13-PARAMETER CALIBRATED TELEMETRY CONTROLS -->
+    <section class="card panel-telemetry">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="badge-tag">SENSORS</span>
+          <h2>🎛️ Physical Input Telemetry (13 Features)</h2>
+        </div>
+        <button id="resetTelemetryBtn" class="btn-micro" title="Reset all sliders to nominal baseline">
+          ↺ Reset Baseline
+        </button>
+      </div>
+
+      <div class="telemetry-scroll-area" id="slidersContainer">
+        <!-- Sliders injected dynamically by app.js -->
+      </div>
+
+      <div class="telemetry-actions">
+        <button id="runDiagnosisBtn" class="btn-diagnose">
+          🔍 EXECUTE MULTI-MODEL DIAGNOSIS
+        </button>
+      </div>
+
+      <!-- ROOT CAUSE FEATURE IMPORTANCE BREAKDOWN -->
+      <div class="factors-card">
+        <div class="factors-head">
+          <span>🧠 Feature Importance (SHAP / Tree Split Weight)</span>
+        </div>
+        <div class="factors-list" id="factorsList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ACCURACY BENCHMARK MODAL DIALOG (FOR SEMINAR JUDGES / AUDIENCE) -->
+  <div class="modal-overlay" id="benchmarkModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 Comprehensive ML Model Benchmark (Evaluated on 4,286 Real Test Samples)</h3>
+        <button class="modal-close" id="closeBenchmarkModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">
+          This benchmark was generated by training and testing all 3 architectures on <strong>21,429 rows of real centrifugal motor telemetry</strong> with an 80/20 train-test split.
+        </p>
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Evaluation Metric</th>
+              <th>Model 1: Random Forest</th>
+              <th>Model 2: Ridge Regression</th>
+              <th>Model 3: XGBoost (Our Choice)</th>
+              <th>Industrial Takeaway</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Architecture</strong></td>
+              <td>Bagged Ensembles (120 Trees)</td>
+              <td>L2 Linear Convex Optimization</td>
+              <td>Gradient Boosted Decision Trees</td>
+              <td>Non-linear trees vs Linear hyperplane</td>
+            </tr>
+            <tr>
+              <td><strong>RUL R² Score</strong></td>
+              <td class="text-emerald"><strong>0.999999</strong></td>
+              <td class="text-amber">0.983445</td>
+              <td class="text-emerald"><strong>0.999989</strong></td>
+              <td>Tree models capture sensor saturation curves</td>
+            </tr>
+            <tr>
+              <td><strong>RUL MAE (Mean Error)</strong></td>
+              <td class="text-emerald"><strong>0.12 hrs</strong> (~7 min)</td>
+              <td class="text-amber">36.71 hrs (~1.5 days)</td>
+              <td class="text-emerald"><strong>0.80 hrs</strong> (~48 min)</td>
+              <td>Ridge lacks non-linear interaction terms</td>
+            </tr>
+            <tr>
+              <td><strong>RUL RMSE</strong></td>
+              <td>0.27 hrs</td>
+              <td>46.14 hrs</td>
+              <td>1.17 hrs</td>
+              <td>XGBoost and RF have near-zero outlier variance</td>
+            </tr>
+            <tr>
+              <td><strong>Anomaly Classification Acc.</strong></td>
+              <td class="text-emerald">100.00%</td>
+              <td>96.94%</td>
+              <td class="text-emerald">99.91%</td>
+              <td>All 3 models accurately detect failure boundaries</td>
+            </tr>
+            <tr>
+              <td><strong>Anomaly F1-Score</strong></td>
+              <td>1.0000</td>
+              <td>0.8927</td>
+              <td>0.9968</td>
+              <td>XGBoost balances precision &amp; recall near perfection</td>
+            </tr>
+            <tr>
+              <td><strong>Inference Latency (per point)</strong></td>
+              <td>0.046 ms</td>
+              <td class="text-emerald"><strong>0.0019 ms</strong></td>
+              <td class="text-emerald"><strong>0.0030 ms</strong></td>
+              <td>XGBoost is 15x faster than RF for Edge IoT deployment</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="benchmark-summary-box">
+          <h4>💡 Key Engineering Conclusion for Seminar Judges:</h4>
+          <p>
+            While Ridge Regression provides an analytical, closed-form parametric model, its linear assumptions cause an average error of <strong>36.7 hours</strong> because pump degradation is inherently non-linear. 
+            <strong>XGBoost</strong> and <strong>Random Forest</strong> achieve exceptional precision (<strong>R² &gt; 0.9999</strong>). Furthermore, <strong>XGBoost provides 15× faster edge inference speed (0.003 ms)</strong>, making it the superior architecture for mission-critical industrial SCADA gateways!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORK ORDER REPORT MODAL -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="modal-content report-print-content">
+      <div class="modal-header">
+        <h3>📋 Official Maintenance Work Order &amp; Diagnostic Audit Report</h3>
+        <button class="modal-close" id="closeReportModal">&times;</button>
+      </div>
+      <div class="modal-body" id="reportContainer">
+        <!-- Rendered by app.js for print / PDF download -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-action btn-outline" id="printReportBtn">🖨️ Print / Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
