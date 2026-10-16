@@ -141,7 +141,7 @@ def legacy_predict(input_data: SensorInput):
 def simulate_fault(req: FaultSimulationRequest):
     """Injects industrial fault profiles into nominal baseline and calculates response across all 3 models."""
     # Nominal baseline [Mot.PV, Mot.SV, Mot.TV, Pmp.PV, Pmp.SV, Pmp.TV, Pres, PmpTemp, Vib, Temp, Load, RPM, Baro]
-    baseline = [0.0017, 3.0, 38.5, 0.0012, 6.7, 40.5, 9.1, 37.5, 3.3, 26.2, 62.0, 1448.0, 1011.5]
+    baseline = [0.0018, 3.0, 30.0, 0.0012, 6.7, 32.0, 1.2, 32.0, 2.45, 25.0, 55.0, 1448.0, 1012.0]
     f = list(baseline)
     s = req.severity
 

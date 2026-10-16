@@ -6,21 +6,21 @@
 
 const API_BASE = "http://localhost:8000";
 
-// 13 Calibrated Industrial Sensor Telemetry Specifications
+// 13 Calibrated Industrial Sensor Telemetry Specifications (Healthy Nominal Baseline)
 const TELEMETRY_DEFS = [
-  { key: "A_ACR_Mot.PV", label: "Motor Current (PV)", min: 0.0005, max: 0.0045, step: 0.0001, unit: "A", baseline: 0.00177 },
-  { key: "A_ACR_Mot.SV", label: "Motor Current (SP)", min: 0.0, max: 20.0, step: 0.1, unit: "A", baseline: 3.013 },
-  { key: "A_ACR_Mot.TV", label: "Motor Totalizer", min: 30.0, max: 50.0, step: 0.5, unit: "kWh", baseline: 38.85 },
-  { key: "A_ACR_Pmp.PV", label: "Pump Current (PV)", min: 0.0002, max: 0.0050, step: 0.0001, unit: "A", baseline: 0.00122 },
-  { key: "A_ACR_Pmp.SV", label: "Pump Current (SP)", min: 0.0, max: 65.0, step: 0.5, unit: "A", baseline: 6.731 },
-  { key: "A_ACR_Pmp.TV", label: "Pump Totalizer", min: 35.0, max: 45.0, step: 0.5, unit: "kWh", baseline: 40.55 },
-  { key: "A_Pres.PV",    label: "Process Pressure", min: 0.1, max: 45.0, step: 0.1, unit: "bar", baseline: 9.12 },
-  { key: "A_Temp.PV",    label: "Pump Body Temp", min: 25.0, max: 60.0, step: 0.5, unit: "°C", baseline: 37.76 },
-  { key: "Vibration_hz", label: "Vibration Frequency", min: 1.0, max: 6.0, step: 0.05, unit: "Hz", baseline: 3.327 },
-  { key: "Temperature",  label: "Ambient / Oil Temp", min: 20.0, max: 35.0, step: 0.2, unit: "°C", baseline: 26.28 },
-  { key: "Load_Percent", label: "Operational Load", min: 30.0, max: 100.0, step: 0.5, unit: "%", baseline: 61.96 },
-  { key: "RPM",          label: "Pump Shaft Speed", min: 1000, max: 1600, step: 5, unit: "RPM", baseline: 1448.28 },
-  { key: "Barometer",    label: "Barometric Pressure", min: 990.0, max: 1030.0, step: 0.5, unit: "hPa", baseline: 1011.43 }
+  { key: "A_ACR_Mot.PV", label: "Motor Current (PV)", min: 0.0005, max: 0.0045, step: 0.0001, unit: "A", baseline: 0.00180 },
+  { key: "A_ACR_Mot.SV", label: "Motor Current (SP)", min: 0.0, max: 20.0, step: 0.1, unit: "A", baseline: 3.000 },
+  { key: "A_ACR_Mot.TV", label: "Motor Totalizer", min: 20.0, max: 50.0, step: 0.5, unit: "kWh", baseline: 30.00 },
+  { key: "A_ACR_Pmp.PV", label: "Pump Current (PV)", min: 0.0002, max: 0.0050, step: 0.0001, unit: "A", baseline: 0.00120 },
+  { key: "A_ACR_Pmp.SV", label: "Pump Current (SP)", min: 0.0, max: 65.0, step: 0.5, unit: "A", baseline: 6.700 },
+  { key: "A_ACR_Pmp.TV", label: "Pump Totalizer", min: 20.0, max: 45.0, step: 0.5, unit: "kWh", baseline: 32.00 },
+  { key: "A_Pres.PV",    label: "Process Pressure", min: 0.1, max: 45.0, step: 0.1, unit: "bar", baseline: 1.20 },
+  { key: "A_Temp.PV",    label: "Pump Body Temp", min: 20.0, max: 60.0, step: 0.5, unit: "°C", baseline: 32.00 },
+  { key: "Vibration_hz", label: "Vibration Frequency", min: 1.0, max: 6.0, step: 0.05, unit: "Hz", baseline: 2.450 },
+  { key: "Temperature",  label: "Ambient / Oil Temp", min: 20.0, max: 35.0, step: 0.2, unit: "°C", baseline: 25.00 },
+  { key: "Load_Percent", label: "Operational Load", min: 30.0, max: 100.0, step: 0.5, unit: "%", baseline: 55.00 },
+  { key: "RPM",          label: "Pump Shaft Speed", min: 1000, max: 1600, step: 5, unit: "RPM", baseline: 1448.00 },
+  { key: "Barometer",    label: "Barometric Pressure", min: 990.0, max: 1030.0, step: 0.5, unit: "hPa", baseline: 1012.00 }
 ];
 
 // State container
