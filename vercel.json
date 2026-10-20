@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/data/(.*)", "destination": "/frontend/data/$1" },
+    { "source": "/(.*\\.(?:js|css|json|svg|png|ico|jpg|html))", "destination": "/frontend/$1" },
+    { "source": "/(.*)", "destination": "/frontend/index.html" }
+  ]
+}
