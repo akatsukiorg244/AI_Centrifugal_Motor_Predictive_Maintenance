@@ -73,8 +73,8 @@ class FaultSimulationRequest(BaseModel):
     scenario: str = Field(..., description="cavitation, bearing_spall, thermal_overload, seal_leak, or unbalance")
     severity: float = Field(default=1.0, ge=0.1, le=3.0, description="Fault severity multiplier")
 
-@app.get("/")
-def root():
+@app.get("/api/system")
+def system_info():
     return {
         "system": "Centrifugal Motor Digital Twin - Industrial Edition",
         "version": "3.0.0",
@@ -235,3 +235,12 @@ async def websocket_telemetry(websocket: WebSocket):
         manager.disconnect(websocket)
     except Exception:
         manager.disconnect(websocket)
+
+# ============ MOUNT INDUSTRIAL SCADA FRONTEND ============
+# Serves the upgraded UI directly on http://localhost:8000/
+frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+if not frontend_dir.exists():
+    frontend_dir = Path("frontend")
+if frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+    print(f"[OK] Mounted industrial SCADA frontend from {frontend_dir}")
