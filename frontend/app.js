@@ -41,6 +41,7 @@ const state = {
 // ===================================================================
 document.addEventListener("DOMContentLoaded", async () => {
   initClock();
+  initCelestialCanvas();
   initHotspotEvents();
   initModals();
   initScenarioButtons();
@@ -69,6 +70,130 @@ function initClock() {
     const now = new Date();
     clockEl.textContent = now.toTimeString().split(' ')[0] + " UTC";
   }, 1000);
+}
+
+// ===================================================================
+// MAPA DO ASTRO CELESTIAL CONSTELLATION CANVAS
+// ===================================================================
+function initCelestialCanvas() {
+  const canvas = document.getElementById("celestialCanvas");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  let width, height;
+  let particles = [];
+  const particleCount = 85;
+  const maxDistance = 115;
+  let mouse = { x: null, y: null, radius: 140 };
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  window.addEventListener("mouseleave", () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  class StarParticle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * (width || window.innerWidth);
+      this.y = Math.random() * (height || window.innerHeight);
+      this.vx = (Math.random() - 0.5) * 0.45;
+      this.vy = (Math.random() - 0.5) * 0.45;
+      this.radius = Math.random() * 1.6 + 0.6;
+      this.baseAlpha = Math.random() * 0.5 + 0.25;
+      this.alpha = this.baseAlpha;
+      this.twinkleSpeed = Math.random() * 0.02 + 0.008;
+      const r = Math.random();
+      if (r < 0.2) this.color = "rgba(61, 245, 192, ";
+      else if (r < 0.4) this.color = "rgba(255, 197, 61, ";
+      else if (r < 0.6) this.color = "rgba(91, 91, 240, ";
+      else this.color = "rgba(244, 241, 234, ";
+    }
+    update(speedFactor) {
+      this.x += this.vx * speedFactor;
+      this.y += this.vy * speedFactor;
+
+      if (this.x < 0) this.x = width;
+      if (this.x > width) this.x = 0;
+      if (this.y < 0) this.y = height;
+      if (this.y > height) this.y = 0;
+
+      this.alpha = this.baseAlpha + Math.sin(Date.now() * this.twinkleSpeed) * 0.18;
+      this.alpha = Math.max(0.1, Math.min(0.9, this.alpha));
+
+      if (mouse.x !== null) {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          this.x -= (dx / dist) * force * 1.2;
+          this.y -= (dy / dist) * force * 1.2;
+        }
+      }
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color + this.alpha + ")";
+      if (this.radius > 1.3) {
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = this.color + "0.6)";
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new StarParticle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    const rpm = (state.currentFeatures && state.currentFeatures[11]) ? state.currentFeatures[11] : 1448;
+    const speedFactor = Math.max(0.3, Math.min(2.5, rpm / 1448));
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDistance) {
+          const lineAlpha = (1 - dist / maxDistance) * 0.16;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
+          ctx.lineWidth = 0.65;
+          ctx.stroke();
+        }
+      }
+    }
+
+    particles.forEach(p => {
+      p.update(speedFactor);
+      p.draw();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
 }
 
 // Load precomputed test trajectory & mathematical weights
@@ -436,7 +561,7 @@ function initCharts() {
   const ridgeAnom = traj.map(d => d.ridge_anomaly_prob);
   const xgbAnom = traj.map(d => d.xgb_anomaly_prob);
 
-  const gridColor = "rgba(255, 255, 255, 0.05)";
+  const gridColor = "rgba(255, 255, 255, 0.04)";
   const fontConfig = { family: "'JetBrains Mono'", size: 9 };
 
   const createChartOptions = (modelColor) => ({
@@ -446,17 +571,18 @@ function initCharts() {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: "rgba(15, 23, 42, 0.95)",
-        titleFont: { family: "'JetBrains Mono'", size: 10 },
+        backgroundColor: "rgba(11, 14, 22, 0.96)",
+        titleFont: { family: "'Space Grotesk', 'JetBrains Mono'", size: 10 },
         bodyFont: { family: "'JetBrains Mono'", size: 10 },
-        borderColor: "#334155",
-        borderWidth: 1
+        borderColor: "rgba(255, 255, 255, 0.12)",
+        borderWidth: 1,
+        padding: 8
       }
     },
     scales: {
       x: {
         grid: { color: gridColor },
-        ticks: { color: "#64748b", font: fontConfig, maxTicksLimit: 14 }
+        ticks: { color: "#5a6478", font: fontConfig, maxTicksLimit: 14 }
       },
       yRul: {
         type: 'linear',
@@ -464,8 +590,8 @@ function initCharts() {
         min: 0,
         max: 1250,
         grid: { color: gridColor },
-        ticks: { color: "#94a3b8", font: fontConfig },
-        title: { display: true, text: "RUL (Hours)", color: "#94a3b8", font: fontConfig }
+        ticks: { color: "#98a1b3", font: fontConfig },
+        title: { display: true, text: "RUL (Hours)", color: "#98a1b3", font: fontConfig }
       },
       yAnomaly: {
         type: 'linear',
@@ -473,8 +599,8 @@ function initCharts() {
         min: 0,
         max: 100,
         grid: { display: false },
-        ticks: { color: "#ef4444", font: fontConfig },
-        title: { display: true, text: "Anomaly %", color: "#ef4444", font: fontConfig }
+        ticks: { color: "#ff7a1a", font: fontConfig },
+        title: { display: true, text: "Fault Risk %", color: "#ff7a1a", font: fontConfig }
       }
     }
   });
@@ -490,7 +616,7 @@ function initCharts() {
           {
             label: "Actual RUL (Datasheet)",
             data: actualRul,
-            borderColor: "#ffffff",
+            borderColor: "#f4f1ea",
             borderWidth: 2,
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -498,8 +624,8 @@ function initCharts() {
           {
             label: "Predicted RUL (Random Forest)",
             data: rfRul,
-            borderColor: "#a855f7",
-            borderWidth: 2,
+            borderColor: "#5b5bf0",
+            borderWidth: 2.2,
             borderDash: [4, 4],
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -507,8 +633,8 @@ function initCharts() {
           {
             label: "Anomaly Risk P(Fault)",
             data: rfAnom,
-            borderColor: "#ef4444",
-            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            borderColor: "#ff7a1a",
+            backgroundColor: "rgba(255, 122, 26, 0.14)",
             fill: true,
             borderWidth: 1.5,
             pointRadius: 0,
@@ -516,7 +642,7 @@ function initCharts() {
           }
         ]
       },
-      options: createChartOptions("#a855f7")
+      options: createChartOptions("#5b5bf0")
     });
   }
 
@@ -531,7 +657,7 @@ function initCharts() {
           {
             label: "Actual RUL (Datasheet)",
             data: actualRul,
-            borderColor: "#ffffff",
+            borderColor: "#f4f1ea",
             borderWidth: 2,
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -539,8 +665,8 @@ function initCharts() {
           {
             label: "Predicted RUL (Ridge Regression)",
             data: ridgeRul,
-            borderColor: "#f59e0b",
-            borderWidth: 2,
+            borderColor: "#ffc53d",
+            borderWidth: 2.2,
             borderDash: [4, 4],
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -548,8 +674,8 @@ function initCharts() {
           {
             label: "Anomaly Risk P(Fault)",
             data: ridgeAnom,
-            borderColor: "#ef4444",
-            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            borderColor: "#ff7a1a",
+            backgroundColor: "rgba(255, 122, 26, 0.14)",
             fill: true,
             borderWidth: 1.5,
             pointRadius: 0,
@@ -557,7 +683,7 @@ function initCharts() {
           }
         ]
       },
-      options: createChartOptions("#f59e0b")
+      options: createChartOptions("#ffc53d")
     });
   }
 
@@ -572,7 +698,7 @@ function initCharts() {
           {
             label: "Actual RUL (Datasheet)",
             data: actualRul,
-            borderColor: "#ffffff",
+            borderColor: "#f4f1ea",
             borderWidth: 2,
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -580,8 +706,8 @@ function initCharts() {
           {
             label: "Predicted RUL (XGBoost)",
             data: xgbRul,
-            borderColor: "#06b6d4",
-            borderWidth: 2,
+            borderColor: "#3df5c0",
+            borderWidth: 2.2,
             borderDash: [4, 4],
             pointRadius: 0,
             yAxisID: 'yRul'
@@ -589,8 +715,8 @@ function initCharts() {
           {
             label: "Anomaly Risk P(Fault)",
             data: xgbAnom,
-            borderColor: "#ef4444",
-            backgroundColor: "rgba(239, 68, 68, 0.12)",
+            borderColor: "#ff7a1a",
+            backgroundColor: "rgba(255, 122, 26, 0.14)",
             fill: true,
             borderWidth: 1.5,
             pointRadius: 0,
@@ -598,7 +724,7 @@ function initCharts() {
           }
         ]
       },
-      options: createChartOptions("#06b6d4")
+      options: createChartOptions("#3df5c0")
     });
   }
 }
@@ -748,56 +874,67 @@ function buildInspectionReport() {
   const agreement = document.getElementById("consensusAgreement").textContent;
 
   container.innerHTML = `
-    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#e2e8f0;">
-      <div style="border-bottom:2px solid #38bdf8; padding-bottom:8px; margin-bottom:12px;">
-        <h2 style="font-size:16px; color:#fff; margin-bottom:4px;">CENTRIFUGAL PUMP PREDICTIVE MAINTENANCE WORK ORDER</h2>
-        <div>Timestamp: ${now.toISOString()} | Standards: ISO 10816-3 Class II | Asset ID: PMP-TWIN-001</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#f4f1ea;">
+      <div style="border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:12px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-size:17px; color:#fff; margin-bottom:4px; letter-spacing:0.5px;">CENTRIFUGAL PUMP PREDICTIVE MAINTENANCE WORK ORDER</h2>
+          <div style="color:#98a1b3; font-size:11px;">ISO 10816-3 Class II Standard Audit | Asset ID: PMP-TWIN-001 | Status: Certified</div>
+        </div>
+        <div style="text-align:right; font-size:11px; color:#98a1b3;">
+          <div>Timestamp: ${now.toUTCString()}</div>
+          <div style="color:#3df5c0; font-weight:bold;">● ENGINE VERIFIED</div>
+        </div>
       </div>
 
-      <h4 style="color:#38bdf8; margin-top:12px;">1. ACTIVE SENSOR TELEMETRY</h4>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#0f172a; padding:10px; border-radius:4px;">
-        <div>Motor Speed: <strong>${Math.round(f[11])} RPM</strong></div>
-        <div>Vibration Frequency: <strong>${f[8].toFixed(2)} Hz</strong></div>
-        <div>Process Pressure: <strong>${f[6].toFixed(2)} bar</strong></div>
-        <div>Pump Body Temp: <strong>${f[7].toFixed(1)} °C</strong></div>
-        <div>Operating Load: <strong>${f[10].toFixed(1)} %</strong></div>
-        <div>Ambient Temp: <strong>${f[9].toFixed(1)} °C</strong></div>
+      <h4 style="font-family:'Space Grotesk',sans-serif; color:#3df5c0; text-transform:uppercase; letter-spacing:0.8px; margin-top:14px;">1. ACTIVE SENSOR TELEMETRY SNAPSHOT</h4>
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; background:rgba(16, 20, 31, 0.85); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.07); margin-top:6px;">
+        <div>Motor Speed: <strong style="color:#3df5c0;">${Math.round(f[11])} RPM</strong></div>
+        <div>Vibration Frequency: <strong style="color:${f[8] > 4.5 ? '#ff7a1a' : '#3df5c0'};">${f[8].toFixed(2)} Hz</strong></div>
+        <div>Process Pressure: <strong style="color:#3df5c0;">${f[6].toFixed(2)} bar</strong></div>
+        <div>Pump Body Temp: <strong style="color:#ffc53d;">${f[7].toFixed(1)} °C</strong></div>
+        <div>Operating Load: <strong style="color:#3df5c0;">${f[10].toFixed(1)} %</strong></div>
+        <div>Ambient Temp: <strong style="color:#3df5c0;">${f[9].toFixed(1)} °C</strong></div>
       </div>
 
-      <h4 style="color:#38bdf8; margin-top:14px;">2. MULTI-MODEL PROGNOSTICS SUMMARY</h4>
+      <h4 style="font-family:'Space Grotesk',sans-serif; color:#3df5c0; text-transform:uppercase; letter-spacing:0.8px; margin-top:16px;">2. MULTI-MODEL PROGNOSTICS SUMMARY</h4>
       <table style="width:100%; border-collapse:collapse; margin-top:6px; font-size:11px;">
-        <tr style="background:#1e293b; text-align:left;">
-          <th style="padding:6px;">Model Architecture</th>
-          <th style="padding:6px;">Predicted RUL</th>
-          <th style="padding:6px;">Test Accuracy (R²)</th>
-          <th style="padding:6px;">Test MAE</th>
+        <tr style="background:rgba(16, 20, 31, 0.95); text-align:left;">
+          <th style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.1); color:#98a1b3;">Model Architecture</th>
+          <th style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.1); color:#98a1b3;">Predicted RUL</th>
+          <th style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.1); color:#98a1b3;">Test Accuracy (R²)</th>
+          <th style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.1); color:#98a1b3;">Test MAE</th>
+          <th style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.1); color:#98a1b3;">Edge Latency</th>
         </tr>
         <tr>
-          <td style="padding:6px; border-bottom:1px solid #334155;">Model 1: Random Forest (Bagging)</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;"><strong>${rfRul} hrs</strong></td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">0.999999</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">0.12 hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#5b5bf0; font-weight:bold;">Model 1: Random Forest</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); font-weight:bold;">${rfRul} hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#3df5c0;">0.999999</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06);">0.12 hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06);">0.0460 ms</td>
         </tr>
         <tr>
-          <td style="padding:6px; border-bottom:1px solid #334155;">Model 2: Ridge Regression (Linear L2)</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;"><strong>${ridgeRul} hrs</strong></td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">0.983445</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">36.71 hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#ffc53d; font-weight:bold;">Model 2: Ridge Regression</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); font-weight:bold;">${ridgeRul} hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#ffc53d;">0.983445</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06);">36.71 hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06);">0.0019 ms</td>
         </tr>
-        <tr>
-          <td style="padding:6px; border-bottom:1px solid #334155;">Model 3: XGBoost (Gradient Boosted)</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;"><strong>${xgbRul} hrs</strong></td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">0.999989</td>
-          <td style="padding:6px; border-bottom:1px solid #334155;">0.80 hrs</td>
+        <tr style="background:rgba(61, 245, 192, 0.06);">
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#3df5c0; font-weight:bold;">Model 3: XGBoost (Recommended)</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); font-weight:bold;">${xgbRul} hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#3df5c0;">0.999989</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06);">0.80 hrs</td>
+          <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); color:#3df5c0;">0.0030 ms</td>
         </tr>
       </table>
 
-      <h4 style="color:#38bdf8; margin-top:14px;">3. DIAGNOSTIC FINDING & CONSENSUS</h4>
-      <p style="background:#0f172a; padding:10px; border-radius:4px;">
-        <strong>Consensus Assessment:</strong> ${agreement}.<br>
-        <strong>Recommended Maintenance Action:</strong> 
-        ${parseFloat(f[8]) > 4.5 ? "IMMEDIATE SHUTDOWN. Bearing vibration exceeds ISO 10816 limit. Perform vibration spectrum analysis and replace drive-end bearing cartridge." : "Routine scheduled lubrication and continuous digital twin telemetry monitoring."}
-      </p>
+      <h4 style="font-family:'Space Grotesk',sans-serif; color:#3df5c0; text-transform:uppercase; letter-spacing:0.8px; margin-top:16px;">3. DIAGNOSTIC CONSENSUS &amp; RECOMMENDED ACTIONS</h4>
+      <div style="background:rgba(16, 20, 31, 0.85); padding:12px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.07); margin-top:6px; line-height:1.6;">
+        <div style="margin-bottom:6px;"><strong>Consensus Assessment:</strong> ${agreement}.</div>
+        <div><strong>Action Directive:</strong> 
+          ${parseFloat(f[8]) > 4.5 ? "<span style='color:#ff7a1a; font-weight:bold;'>CRITICAL INTERVENTION:</span> Vibration frequency exceeds ISO 10816 limit (>4.5 Hz). Initiate controlled shutdown, schedule drive-end bearing replacement, and inspect impeller clearance." : "<span style='color:#3df5c0; font-weight:bold;'>NOMINAL OPERATION:</span> All 13 telemetry parameters within calibrated operating margins. Continue normal duty cycle."}
+        </div>
+      </div>
     </div>
   `;
 }

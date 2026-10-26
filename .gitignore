@@ -6,3 +6,6 @@ ml/converted_file.csv
 *.pkl 
 ml/converted_file.csv 
 *.pkl 
+
+.vercel
+.env*

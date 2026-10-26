@@ -1,36 +1,61 @@
 /* ===================================================================
-   CENTRIFUGAL PUMP DIGITAL TWIN — INDUSTRIAL SCADA STYLESHEET
-   Typography: Inter (Display/UI) + JetBrains Mono (Telemetry/Metrics)
-   Design System: Mission-Critical SCADA / Dark Glassmorphism / Cyber-Physical
+   CENTRIFUGAL PUMP DIGITAL TWIN — INDUSTRIAL PREDICTIVE MAINTENANCE SUITE
+   Design Archetype: PulseBridge Cyber-Cockpit + Mapa do Astro Celestial
+   Color Palette: Obsidian (#05060a), Signal Teal (#3df5c0), Amber (#ffc53d),
+                  Ember (#ff7a1a), Hyper Indigo (#5b5bf0), Starlight (#f4f1ea)
+   Typography: Space Grotesk (Headings/Display) + Inter (Body) + JetBrains Mono (Telemetry)
    =================================================================== */
 
 :root {
-  --bg-dark: #080b11;
-  --bg-panel: #0f172a;
-  --bg-card: #131d35;
-  --bg-subtle: #1e293b;
-  --border-dim: #1f2937;
-  --border-glow: #334155;
-  --border-focus: #38bdf8;
+  /* PulseBridge Dark Obsidian Surfaces */
+  --pb-bg: #05060a;
+  --pb-surface: rgba(11, 14, 22, 0.78);
+  --pb-surface-solid: #0b0e16;
+  --pb-surface-2: rgba(16, 20, 31, 0.88);
+  --pb-surface-hover: rgba(22, 28, 44, 0.85);
 
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  /* Hairline Borders & Dividers */
+  --pb-hair: rgba(255, 255, 255, 0.07);
+  --pb-hair-hover: rgba(255, 255, 255, 0.15);
+  --pb-hair-accent: rgba(61, 245, 192, 0.35);
 
-  /* Model color accents */
-  --color-rf: #8b5cf6;       /* Violet / Bagging */
-  --color-ridge: #f59e0b;    /* Amber / Linear */
-  --color-xgb: #06b6d4;      /* Cyan / Boosted */
+  /* Signature Accents */
+  --pb-signal: #3df5c0;
+  --pb-signal-rgb: 61, 245, 192;
+  --pb-signal-glow: rgba(61, 245, 192, 0.25);
 
-  /* Operational states */
-  --status-healthy: #10b981;  /* Emerald */
-  --status-good: #06b6d4;     /* Cyan */
-  --status-neutral: #f59e0b;  /* Amber */
-  --status-warning: #f97316;  /* Orange */
-  --status-critical: #ef4444; /* Crimson */
+  --pb-amber: #ffc53d;
+  --pb-amber-rgb: 255, 197, 61;
+  --pb-amber-glow: rgba(255, 197, 61, 0.25);
 
+  --pb-ember: #ff7a1a;
+  --pb-ember-rgb: 255, 122, 26;
+  --pb-ember-glow: rgba(255, 122, 26, 0.25);
+
+  --pb-indigo: #5b5bf0;
+  --pb-indigo-rgb: 91, 91, 240;
+  --pb-indigo-glow: rgba(91, 91, 240, 0.25);
+
+  --pb-crimson: #ff4d6a;
+
+  /* Text & Typography */
+  --pb-text: #f4f1ea;
+  --pb-muted: #98a1b3;
+  --pb-dim: #5a6478;
+
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+  /* Model Signatures */
+  --color-rf: #5b5bf0;
+  --color-ridge: #ffc53d;
+  --color-xgb: #3df5c0;
+
+  /* Operational States */
+  --status-healthy: #3df5c0;
+  --status-warning: #ffc53d;
+  --status-critical: #ff7a1a;
 }
 
 * {
@@ -39,39 +64,102 @@
   box-sizing: border-box;
 }
 
-body.industrial-theme {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  font-family: var(--font-ui);
+html, body {
+  width: 100%;
   min-height: 100vh;
+  background-color: var(--pb-bg);
+  color: var(--pb-text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body.industrial-theme {
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  /* Micro-Grid Texture */
   background-image: 
-    radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* ===================================================================
-   SCADA HEADER BAR
+   MAPA DO ASTRO CELESTIAL CANVAS & AMBIENT RADIAL LIGHTS
+   =================================================================== */
+.celestial-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+.ambient-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.22;
+}
+
+.ambient-glow-1 {
+  width: 520px;
+  height: 520px;
+  top: -100px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(91, 91, 240, 0.45) 0%, transparent 70%);
+}
+
+.ambient-glow-2 {
+  width: 600px;
+  height: 600px;
+  top: 20%;
+  right: -120px;
+  background: radial-gradient(circle, rgba(61, 245, 192, 0.35) 0%, transparent 70%);
+}
+
+.ambient-glow-3 {
+  width: 550px;
+  height: 550px;
+  bottom: 5%;
+  left: 25%;
+  background: radial-gradient(circle, rgba(255, 197, 61, 0.2) 0%, transparent 70%);
+}
+
+/* All interactive elements sit above the canvas */
+.scada-header, .consensus-bar, .dashboard-grid-2col, .modal-overlay {
+  position: relative;
+  z-index: 10;
+}
+
+/* ===================================================================
+   FLOATING SCADA HEADER (PULSEBRIDGE GLASS BAR)
    =================================================================== */
 .scada-header {
-  background: rgba(15, 23, 42, 0.95);
-  border-bottom: 1px solid var(--border-glow);
-  padding: 12px 24px;
+  background: rgba(11, 14, 22, 0.82);
+  border-bottom: 1px solid var(--pb-hair);
+  padding: 12px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .scada-logo {
@@ -82,50 +170,52 @@ body.industrial-theme {
 
 .icon-gear {
   font-size: 26px;
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
-  animation: slowSpin 20s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(61, 245, 192, 0.5));
+  animation: slowSpin 25s linear infinite;
+  display: inline-block;
 }
 @keyframes slowSpin { to { transform: rotate(360deg); } }
 
 .logo-text h1 {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--pb-text);
   line-height: 1.2;
 }
 
 .sub-heading {
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
+  color: var(--pb-muted);
+  letter-spacing: 0.4px;
 }
 
 .iso-standard-tag {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: var(--status-healthy);
+  background: rgba(61, 245, 192, 0.08);
+  border: 1px solid rgba(61, 245, 192, 0.25);
+  color: var(--pb-signal);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   gap: 6px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }
 
 .dot-live {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--status-healthy);
-  box-shadow: 0 0 6px var(--status-healthy);
-  animation: pulseDot 1.5s infinite;
+  background: var(--pb-signal);
+  box-shadow: 0 0 8px var(--pb-signal);
+  animation: pulseDot 2s infinite ease-in-out;
 }
-@keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
 .header-controls {
   display: flex;
@@ -136,11 +226,12 @@ body.industrial-theme {
 .telemetry-clock {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--text-muted);
-  background: var(--bg-dark);
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid var(--border-dim);
+  color: var(--pb-text);
+  background: rgba(16, 20, 31, 0.7);
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--pb-hair);
+  letter-spacing: 0.5px;
 }
 
 .connection-badge {
@@ -153,18 +244,18 @@ body.industrial-theme {
   padding: 6px 14px;
   border-radius: 20px;
   letter-spacing: 0.5px;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .status-cloud {
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.4);
-  color: var(--color-xgb);
+  background: rgba(91, 91, 240, 0.12);
+  border: 1px solid rgba(91, 91, 240, 0.35);
+  color: #a5b4fc;
 }
 .status-cloud.live {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.5);
-  color: var(--status-healthy);
+  background: rgba(61, 245, 192, 0.12);
+  border-color: rgba(61, 245, 192, 0.45);
+  color: var(--pb-signal);
 }
 
 .pulse-indicator {
@@ -173,53 +264,73 @@ body.industrial-theme {
   border-radius: 50%;
   background: currentColor;
   box-shadow: 0 0 8px currentColor;
+  position: relative;
+}
+.pulse-indicator::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0.6;
+  animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes radarPing {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
 }
 
 .btn-action {
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 600;
-  padding: 7px 14px;
-  border-radius: 6px;
+  padding: 7px 15px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-outline {
-  background: var(--bg-card);
-  border: 1px solid var(--border-glow);
-  color: var(--text-main);
+  background: rgba(16, 20, 31, 0.7);
+  border: 1px solid var(--pb-hair);
+  color: var(--pb-text);
+  backdrop-filter: blur(10px);
 }
 .btn-outline:hover {
-  background: var(--bg-subtle);
-  border-color: var(--border-focus);
+  background: var(--pb-surface-hover);
+  border-color: var(--pb-hair-hover);
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #0284c7, #0369a1);
-  border: 1px solid #38bdf8;
+  background: linear-gradient(135deg, rgba(61, 245, 192, 0.25), rgba(91, 91, 240, 0.25));
+  border: 1px solid rgba(61, 245, 192, 0.5);
   color: #fff;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 16px rgba(61, 245, 192, 0.2);
 }
 .btn-primary:hover {
-  filter: brightness(1.15);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+  background: linear-gradient(135deg, rgba(61, 245, 192, 0.4), rgba(91, 91, 240, 0.35));
+  border-color: var(--pb-signal);
+  box-shadow: 0 0 22px rgba(61, 245, 192, 0.35);
+  transform: translateY(-1px);
 }
 
 /* ===================================================================
-   CONSENSUS STRIP
+   CONSENSUS STRIP (PULSEBRIDGE TELEMETRY DOCK)
    =================================================================== */
 .consensus-bar {
-  background: rgba(15, 23, 42, 0.7);
-  border-bottom: 1px solid var(--border-dim);
-  padding: 8px 24px;
+  background: rgba(11, 14, 22, 0.65);
+  border-bottom: 1px solid var(--pb-hair);
+  padding: 9px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .consensus-kpi {
@@ -228,122 +339,189 @@ body.industrial-theme {
 }
 
 .kpi-label {
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-dim);
-  letter-spacing: 0.8px;
+  color: var(--pb-dim);
+  letter-spacing: 0.9px;
+  margin-bottom: 2px;
 }
 
 .kpi-value {
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--pb-text);
 }
 
 .text-cyan { color: #38bdf8; }
-.text-emerald { color: #10b981; }
-.text-amber { color: #f59e0b; }
-.text-crimson { color: #ef4444; }
+.text-emerald { color: var(--pb-signal); }
+.text-amber { color: var(--pb-amber); }
+.text-crimson { color: var(--pb-ember); }
 
 .consensus-divider {
   width: 1px;
   height: 24px;
-  background: var(--border-dim);
+  background: var(--pb-hair);
 }
 
 .status-pill {
-  padding: 3px 10px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
   font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.4px;
 }
-.status-healthy { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-.status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
-.status-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); }
+.status-healthy {
+  background: rgba(61, 245, 192, 0.12);
+  color: var(--pb-signal);
+  border: 1px solid rgba(61, 245, 192, 0.35);
+  box-shadow: 0 0 10px rgba(61, 245, 192, 0.15);
+}
+.status-warning {
+  background: rgba(255, 197, 61, 0.12);
+  color: var(--pb-amber);
+  border: 1px solid rgba(255, 197, 61, 0.35);
+  box-shadow: 0 0 10px rgba(255, 197, 61, 0.15);
+}
+.status-critical {
+  background: rgba(255, 122, 26, 0.15);
+  color: var(--pb-ember);
+  border: 1px solid rgba(255, 122, 26, 0.45);
+  box-shadow: 0 0 14px rgba(255, 122, 26, 0.25);
+  animation: pulseCritical 1.5s infinite;
+}
+@keyframes pulseCritical {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 122, 26, 0.25); }
+  50% { box-shadow: 0 0 24px rgba(255, 122, 26, 0.5); }
+}
 
 /* ===================================================================
-   MAIN WORKSPACE GRID
+   MAIN WORKSPACE 2-COLUMN SCADA LAYOUT
    =================================================================== */
-.dashboard-grid {
+.dashboard-grid-2col {
   display: grid;
-  grid-template-columns: 420px 1fr 340px;
-  gap: 16px;
-  padding: 16px 20px;
+  grid-template-columns: 395px 1fr;
+  gap: 20px;
+  padding: 20px 28px;
   flex: 1;
   max-width: 1920px;
   margin: 0 auto;
   width: 100%;
 }
 
+.panel-twin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-main-suite {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Glass Card Foundation */
 .card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-dim);
-  border-radius: 10px;
-  padding: 16px;
+  background: var(--pb-surface);
+  border: 1px solid var(--pb-hair);
+  border-radius: 12px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  border-color: var(--pb-hair-hover);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border-dim);
-  padding-bottom: 10px;
+  border-bottom: 1px solid var(--pb-hair);
+  padding-bottom: 12px;
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .badge-tag {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-glow);
-  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pb-hair);
+  color: var(--pb-muted);
   font-size: 9px;
   font-family: var(--font-mono);
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 4px;
+  letter-spacing: 0.5px;
 }
 
 .card-header h2 {
+  font-family: var(--font-display);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--pb-text);
 }
 
 /* ===================================================================
-   PANEL 1: PHYSICAL DIGITAL TWIN SCHEMATIC
+   PANEL 1: PHYSICAL DIGITAL TWIN (CELESTIAL-CYBER HYBRID)
    =================================================================== */
 .twin-state-badge {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: var(--status-healthy);
+  background: rgba(61, 245, 192, 0.1);
+  border: 1px solid rgba(61, 245, 192, 0.3);
+  color: var(--pb-signal);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
 }
 
 .twin-viewport {
-  background: #090e1a;
-  border: 1px solid var(--border-glow);
-  border-radius: 8px;
-  padding: 10px;
+  background: radial-gradient(circle at 60% 50%, #0d121f 0%, #05070d 100%);
+  border: 1px solid var(--pb-hair);
+  border-radius: 10px;
+  padding: 12px;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Mapa do Astro Celestial Gyro Orbit Animation */
+.orbit-spin-cw {
+  transform-origin: 340px 150px;
+  animation: orbitSpin 30s linear infinite;
+}
+.orbit-spin-ccw {
+  transform-origin: 340px 150px;
+  animation: orbitSpinBack 40s linear infinite;
+}
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbitSpinBack {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
 
 .pump-schematic {
@@ -355,7 +533,7 @@ body.industrial-theme {
 /* Rotating impeller animation */
 .rotating-blades {
   transform-origin: 0px 0px;
-  animation: bladeSpin 0.8s linear infinite;
+  animation: bladeSpin 0.75s linear infinite;
 }
 @keyframes bladeSpin {
   from { transform: rotate(0deg); }
@@ -365,72 +543,71 @@ body.industrial-theme {
 /* Twin interactive hotspots */
 .twin-hotspot {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 .twin-hotspot:hover {
-  filter: drop-shadow(0 0 6px #38bdf8);
-  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px #3df5c0);
+  stroke-width: 2.2;
 }
 
 /* Hotspot diagnostic detail box */
 .hotspot-detail-box {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid var(--border-glow);
-  border-left: 3px solid #38bdf8;
-  border-radius: 6px;
-  padding: 10px 12px;
+  background: rgba(16, 20, 31, 0.65);
+  border: 1px solid var(--pb-hair);
+  border-left: 3px solid var(--pb-signal);
+  border-radius: 8px;
+  padding: 11px 14px;
+  backdrop-filter: blur(12px);
 }
 
 .hotspot-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .hotspot-title {
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
   color: #fff;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .hotspot-health-tag {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: var(--status-healthy);
+  color: var(--pb-signal);
 }
 
 .hotspot-desc {
   font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
+  color: var(--pb-muted);
+  line-height: 1.45;
 }
 
-/* Fault injection controls */
+/* Fault injection controls (PulseBridge Tactile Switches) */
 .fault-injection-panel {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  padding: 12px;
+  background: rgba(16, 20, 31, 0.65);
+  border: 1px solid var(--pb-hair);
+  border-radius: 10px;
+  padding: 14px;
 }
 
 .panel-subhead {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--pb-text);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-.help-tooltip {
-  cursor: pointer;
-  opacity: 0.7;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
 }
 
 .fault-buttons-grid {
@@ -440,115 +617,168 @@ body.industrial-theme {
 }
 
 .btn-scenario {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-dim);
-  color: var(--text-muted);
-  font-family: var(--font-ui);
+  background: rgba(11, 14, 22, 0.85);
+  border: 1px solid var(--pb-hair);
+  color: var(--pb-muted);
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 600;
-  padding: 8px 6px;
-  border-radius: 6px;
+  padding: 9px 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
 }
 
 .btn-scenario:hover {
-  background: var(--bg-subtle);
-  border-color: var(--border-focus);
+  background: var(--pb-surface-hover);
+  border-color: var(--pb-hair-hover);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .btn-scenario.active {
-  background: rgba(56, 189, 248, 0.15);
-  border-color: #38bdf8;
+  background: rgba(61, 245, 192, 0.12);
+  border-color: var(--pb-signal);
   color: #fff;
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 14px rgba(61, 245, 192, 0.25), inset 0 0 8px rgba(61, 245, 192, 0.15);
 }
 
-/* Timeline scrubber */
-.timeline-scrubber-box {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  padding: 12px;
+/* Active telemetry snapshot card */
+.telemetry-snapshot-box {
+  background: rgba(16, 20, 31, 0.65);
+  border: 1px solid var(--pb-hair);
+  border-radius: 10px;
+  padding: 14px;
 }
 
-.scrubber-head {
+.snapshot-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-}
-
-.scrubber-title {
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
-  color: var(--text-main);
   text-transform: uppercase;
+  color: var(--pb-text);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
 }
 
-.scrubber-idx {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-xgb);
-  font-weight: 700;
-}
-
-.slider-scrubber {
-  width: 100%;
-  accent-color: #38bdf8;
+.btn-micro {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--pb-hair);
+  color: var(--pb-muted);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-micro:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--pb-hair-hover);
+  color: #fff;
 }
 
-.scrubber-labels {
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.snapshot-item {
+  background: rgba(11, 14, 22, 0.85);
+  border: 1px solid var(--pb-hair);
+  border-radius: 6px;
+  padding: 7px 10px;
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
-  color: var(--text-dim);
-  margin-top: 4px;
+  align-items: center;
+  font-size: 11px;
+  transition: border-color 0.2s;
+}
+.snapshot-item:hover {
+  border-color: var(--pb-hair-hover);
+}
+
+.snapshot-label {
+  color: var(--pb-muted);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.snapshot-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--pb-signal);
+  font-size: 11px;
 }
 
 /* ===================================================================
-   PANEL 2: 3-MODEL CONCURRENT COMPARISON MATRIX
+   PANEL 2: REAL-TIME INFERENCE OUTPUT (3 MODELS)
    =================================================================== */
 .tag-live {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: var(--status-healthy);
+  background: rgba(61, 245, 192, 0.1);
+  border: 1px solid rgba(61, 245, 192, 0.3);
+  color: var(--pb-signal);
   font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.6px;
 }
 
 .models-tri-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 .model-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-glow);
-  border-radius: 8px;
-  padding: 14px;
+  background: var(--pb-surface-2);
+  border: 1px solid var(--pb-hair);
+  border-radius: 10px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .model-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  border-color: var(--pb-hair-hover);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
 }
 
-.card-rf { border-top: 3px solid var(--color-rf); }
-.card-ridge { border-top: 3px solid var(--color-ridge); }
-.card-xgb { border-top: 3px solid var(--color-xgb); }
+/* Specific Model Accents */
+.card-rf {
+  border-top: 2px solid var(--color-rf);
+}
+.card-ridge {
+  border-top: 2px solid var(--color-ridge);
+}
+.card-xgb {
+  border-top: 2px solid var(--color-xgb);
+}
+
+/* XGBoost Radiant Benchmark Glow */
+.card-xgb.active-benchmark {
+  border-color: rgba(61, 245, 192, 0.4);
+  box-shadow: 0 0 20px rgba(61, 245, 192, 0.12);
+  animation: xgbPulseGlow 3s infinite alternate;
+}
+@keyframes xgbPulseGlow {
+  0% { box-shadow: 0 0 16px rgba(61, 245, 192, 0.1); }
+  100% { box-shadow: 0 0 26px rgba(61, 245, 192, 0.22); }
+}
 
 .model-badge-row {
   display: flex;
@@ -557,568 +787,171 @@ body.industrial-theme {
 }
 
 .model-badge {
+  font-family: var(--font-display);
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 3px 8px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 3px 9px;
   border-radius: 4px;
 }
-.badge-rf { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
-.badge-ridge { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
-.badge-xgb { background: rgba(6, 182, 212, 0.2); color: #a5f3fc; }
+.badge-rf {
+  background: rgba(91, 91, 240, 0.15);
+  color: #c7d2fe;
+  border: 1px solid rgba(91, 91, 240, 0.35);
+}
+.badge-ridge {
+  background: rgba(255, 197, 61, 0.15);
+  color: #fef08a;
+  border: 1px solid rgba(255, 197, 61, 0.35);
+}
+.badge-xgb {
+  background: rgba(61, 245, 192, 0.15);
+  color: #a7f3d0;
+  border: 1px solid rgba(61, 245, 192, 0.45);
+}
 
 .model-paradigm {
   font-size: 9px;
-  color: var(--text-dim);
+  color: var(--pb-dim);
   font-family: var(--font-mono);
 }
 
 .model-rul-section {
-  background: rgba(15, 23, 42, 0.6);
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border-dim);
+  background: rgba(11, 14, 22, 0.7);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--pb-hair);
 }
 
 .metric-label {
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--pb-dim);
+  letter-spacing: 0.5px;
 }
 
 .metric-big {
   font-family: var(--font-mono);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
-  color: #fff;
-  line-height: 1.2;
+  color: var(--pb-text);
+  line-height: 1.15;
+  margin: 3px 0;
 }
 .metric-big small {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-dim);
+  color: var(--pb-dim);
 }
 
 .metric-sub {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--pb-muted);
   font-family: var(--font-mono);
 }
 
 .model-gauge-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .gauge-label-wrap {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--pb-muted);
 }
 .gauge-label-wrap strong {
   font-family: var(--font-mono);
-  color: #fff;
+  color: var(--pb-text);
 }
 
 .progress-track {
   height: 6px;
-  background: var(--bg-dark);
-  border-radius: 3px;
+  background: rgba(11, 14, 22, 0.9);
+  border-radius: 4px;
   overflow: hidden;
-  border: 1px solid var(--border-dim);
+  border: 1px solid var(--pb-hair);
 }
 
 .progress-bar {
   height: 100%;
-  transition: width 0.4s ease;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.bg-rf { background: var(--color-rf); }
-.bg-ridge { background: var(--color-ridge); }
-.bg-xgb { background: var(--color-xgb); }
+.bg-rf { background: linear-gradient(90deg, #5b5bf0, #818cf8); }
+.bg-ridge { background: linear-gradient(90deg, #ffc53d, #fde047); }
+.bg-xgb { background: linear-gradient(90deg, #3df5c0, #6ee7b7); }
 
 .model-stats-footer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  border-top: 1px solid var(--border-dim);
-  padding-top: 8px;
+  gap: 6px;
+  border-top: 1px solid var(--pb-hair);
+  padding-top: 10px;
   text-align: center;
 }
 
 .stat-mini label {
   display: block;
+  font-family: var(--font-display);
   font-size: 9px;
-  color: var(--text-dim);
+  color: var(--pb-dim);
   text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
 }
 .stat-mini span {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-}
-
-/* Consensus insight box */
-.consensus-detail-card {
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid var(--border-dim);
-  border-radius: 6px;
-  padding: 10px 14px;
-}
-
-.delta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.delta-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: #38bdf8;
-  text-transform: uppercase;
-}
-
-.badge-consensus {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--status-healthy);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.delta-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-/* Synchronized Charts */
-.charts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.chart-wrapper {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.chart-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.chart-name {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #fff;
-  letter-spacing: 0.5px;
-}
-
-.chart-legend-custom {
-  display: flex;
-  gap: 10px;
-}
-
-.legend-chip {
-  font-size: 9px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
-}
-.color-actual { background: rgba(241, 245, 249, 0.15); color: #fff; }
-.color-rf { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
-.color-ridge { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
-.color-xgb { background: rgba(6, 182, 212, 0.2); color: #a5f3fc; }
-
-.chart-alert-tag, .chart-metric-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--status-healthy);
-  background: rgba(16, 185, 129, 0.12);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.canvas-holder {
-  height: 130px;
-  width: 100%;
-  position: relative;
+  color: var(--pb-text);
 }
 
 /* ===================================================================
-   PANEL 3: TELEMETRY SLIDERS (13 FEATURES)
-   =================================================================== */
-.btn-micro {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-glow);
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.btn-micro:hover {
-  background: #334155;
-  color: #fff;
-}
-
-.telemetry-scroll-area {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 480px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.telemetry-scroll-area::-webkit-scrollbar {
-  width: 5px;
-}
-.telemetry-scroll-area::-webkit-scrollbar-track {
-  background: var(--bg-dark);
-}
-.telemetry-scroll-area::-webkit-scrollbar-thumb {
-  background: var(--border-glow);
-  border-radius: 3px;
-}
-
-.telemetry-row {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-dim);
-  border-radius: 6px;
-  padding: 8px 10px;
-  transition: border-color 0.2s;
-}
-.telemetry-row:hover {
-  border-color: var(--border-glow);
-}
-
-.telemetry-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  margin-bottom: 4px;
-}
-
-.telemetry-label {
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.telemetry-val {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: #38bdf8;
-}
-
-.telemetry-slider {
-  width: 100%;
-  height: 4px;
-  accent-color: #38bdf8;
-  cursor: pointer;
-}
-
-.btn-diagnose {
-  width: 100%;
-  background: linear-gradient(135deg, #0284c7, #2563eb);
-  border: 1px solid #38bdf8;
-  color: #fff;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-}
-.btn-diagnose:hover {
-  filter: brightness(1.15);
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.5);
-}
-
-/* Feature importance list */
-.factors-card {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid var(--border-dim);
-  border-radius: 6px;
-  padding: 10px;
-}
-
-.factors-head {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.factor-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.factor-name {
-  color: var(--text-muted);
-}
-
-.factor-weight {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: #f59e0b;
-}
-
-/* ===================================================================
-   MODAL WINDOWS & BENCHMARK DIALOG
-   =================================================================== */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(6px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-}
-.modal-overlay.open {
-  display: flex;
-}
-
-.modal-content {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-glow);
-  border-radius: 10px;
-  width: 900px;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-glow);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.modal-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-intro {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-.benchmark-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-.benchmark-table th, .benchmark-table td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--border-dim);
-}
-
-.benchmark-table th {
-  background: var(--bg-card);
-  color: #fff;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 11px;
-}
-
-.benchmark-summary-box {
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  border-radius: 6px;
-  padding: 14px;
-}
-
-.benchmark-summary-box h4 {
-  font-size: 12px;
-  font-weight: 700;
-  color: #38bdf8;
-  margin-bottom: 6px;
-}
-
-.benchmark-summary-box p {
-  font-size: 12px;
-  color: var(--text-main);
-  line-height: 1.5;
-}
-
-/* ===================================================================
-   SEMINAR MODE OVERRIDE (HIGH-CONTRAST FOR PROJECTORS)
-   =================================================================== */
-body.seminar-active {
-  --bg-dark: #05070c;
-  --bg-panel: #0a0f1d;
-  --bg-card: #0f172a;
-  --border-dim: #334155;
-  --border-glow: #475569;
-}
-body.seminar-active .metric-big {
-  font-size: 30px;
-}
-body.seminar-active .scada-header h1 {
-  font-size: 19px;
-}
-
-/* ===================================================================
-   RESPONSIVE DESIGN & 2-COLUMN SCADA LAYOUT
-   =================================================================== */
-.dashboard-grid-2col {
-  display: grid;
-  grid-template-columns: 390px 1fr;
-  gap: 16px;
-  padding: 16px 20px;
-  flex: 1;
-  max-width: 1920px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.panel-main-suite {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* Telemetry snapshot under twin */
-.telemetry-snapshot-box {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.snapshot-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-main);
-  margin-bottom: 8px;
-}
-
-.snapshot-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-.snapshot-item {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-dim);
-  border-radius: 4px;
-  padding: 5px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-}
-
-.snapshot-label {
-  color: var(--text-muted);
-}
-
-.snapshot-val {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  color: #38bdf8;
-}
-
-/* ===================================================================
-   ON-PAGE MODEL ACCURACY BENCHMARK TABLE
+   DIRECT ON-PAGE ACCURACY BENCHMARK TABLE
    =================================================================== */
 .benchmark-table-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-glow);
-  border-radius: 8px;
-  padding: 14px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: var(--pb-surface-2);
+  border: 1px solid var(--pb-hair);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .table-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--border-dim);
-  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--pb-hair);
+  padding-bottom: 10px;
 }
 
 .table-card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .table-card-title h3 {
-  font-size: 12px;
+  font-family: var(--font-display);
+  font-size: 13px;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.5px;
+  color: var(--pb-text);
+  letter-spacing: 0.6px;
 }
 
 .dataset-source-tag {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--text-muted);
-  background: var(--bg-dark);
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--border-dim);
+  color: var(--pb-muted);
+  background: rgba(11, 14, 22, 0.85);
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--pb-hair);
 }
 
 .table-responsive {
@@ -1132,27 +965,31 @@ body.seminar-active .scada-header h1 {
 }
 
 .accuracy-benchmark-table th, .accuracy-benchmark-table td {
-  padding: 9px 12px;
+  padding: 10px 14px;
   text-align: left;
-  border-bottom: 1px solid var(--border-dim);
+  border-bottom: 1px solid var(--pb-hair);
 }
 
 .accuracy-benchmark-table th {
-  background: rgba(15, 23, 42, 0.85);
-  color: var(--text-muted);
+  background: rgba(11, 14, 22, 0.7);
+  color: var(--pb-dim);
+  font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
   font-size: 10px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
 }
 
+.accuracy-benchmark-table tbody tr {
+  transition: background 0.2s;
+}
 .accuracy-benchmark-table tbody tr:hover {
-  background: rgba(56, 189, 248, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .row-highlight {
-  background: rgba(6, 182, 212, 0.08);
-  border-left: 3px solid var(--color-xgb);
+  background: rgba(61, 245, 192, 0.05);
+  border-left: 3px solid var(--pb-signal);
 }
 
 .color-text-rf { color: var(--color-rf); }
@@ -1163,12 +1000,26 @@ body.seminar-active .scada-header h1 {
   font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
 }
-.verdict-good { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
-.verdict-linear { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4); }
-.verdict-recommended { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.5); }
+.verdict-good {
+  background: rgba(91, 91, 240, 0.15);
+  color: #c7d2fe;
+  border: 1px solid rgba(91, 91, 240, 0.35);
+}
+.verdict-linear {
+  background: rgba(255, 197, 61, 0.15);
+  color: #fef08a;
+  border: 1px solid rgba(255, 197, 61, 0.35);
+}
+.verdict-recommended {
+  background: rgba(61, 245, 192, 0.18);
+  color: #6ee7b7;
+  border: 1px solid rgba(61, 245, 192, 0.45);
+  box-shadow: 0 0 10px rgba(61, 245, 192, 0.2);
+}
 
 /* ===================================================================
    3 DEDICATED GRAPHS FOR EACH MODEL
@@ -1176,92 +1027,338 @@ body.seminar-active .scada-header h1 {
 .three-graphs-container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .dedicated-chart-card {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  padding: 12px 14px;
-  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.4);
+  background: var(--pb-surface-2);
+  border: 1px solid var(--pb-hair);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.25s;
+}
+
+.dedicated-chart-card:hover {
+  border-color: var(--pb-hair-hover);
 }
 
 .dedicated-chart-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .chart-title-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .chart-model-chip {
   font-size: 9px;
   font-weight: 800;
-  font-family: var(--font-mono);
-  padding: 2px 6px;
-  border-radius: 3px;
+  font-family: var(--font-display);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
 }
 
 .chart-heading {
-  font-size: 11px;
+  font-family: var(--font-display);
+  font-size: 12px;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.3px;
+  color: var(--pb-text);
+  letter-spacing: 0.4px;
 }
 
 .dedicated-legend {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .leg-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 9px;
+  gap: 6px;
+  font-size: 10px;
   font-family: var(--font-mono);
-  color: var(--text-muted);
+  color: var(--pb-muted);
 }
 
 .leg-box {
-  width: 12px;
+  width: 14px;
   height: 4px;
   border-radius: 2px;
 }
-.leg-actual { background: #ffffff; }
+.leg-actual { background: var(--pb-text); }
 .leg-rf { background: var(--color-rf); }
 .leg-ridge { background: var(--color-ridge); }
 .leg-xgb { background: var(--color-xgb); }
-.leg-anom { background: #ef4444; }
+.leg-anom { background: var(--pb-ember); }
 
 .dedicated-canvas-holder {
-  height: 140px;
+  height: 145px;
   width: 100%;
   position: relative;
 }
 
-/* Modal sliders */
-.modal-sliders-content {
-  width: 820px;
+/* ===================================================================
+   MODALS: MANUAL SLIDERS DRAWER & WORK ORDER REPORT
+   =================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 10, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
 }
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: #0b0e16;
+  border: 1px solid var(--pb-hair-hover);
+  border-radius: 14px;
+  width: 860px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(61, 245, 192, 0.08);
+}
+
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--pb-hair);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pb-text);
+  letter-spacing: 0.5px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--pb-muted);
+  font-size: 26px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: #fff;
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-intro {
+  font-size: 13px;
+  color: var(--pb-muted);
+  line-height: 1.5;
+}
+
 .modal-sliders-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  max-height: 460px;
+  gap: 12px;
+  max-height: 480px;
   overflow-y: auto;
-  padding-right: 6px;
+  padding-right: 8px;
 }
 
-@media (max-width: 1300px) {
+.modal-sliders-grid::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-sliders-grid::-webkit-scrollbar-track {
+  background: rgba(11, 14, 22, 0.7);
+}
+.modal-sliders-grid::-webkit-scrollbar-thumb {
+  background: var(--pb-hair-hover);
+  border-radius: 3px;
+}
+
+.telemetry-row {
+  background: rgba(16, 20, 31, 0.75);
+  border: 1px solid var(--pb-hair);
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.2s;
+}
+.telemetry-row:hover {
+  border-color: var(--pb-hair-hover);
+}
+
+.telemetry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.telemetry-label {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--pb-muted);
+}
+
+.telemetry-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pb-signal);
+}
+
+.telemetry-slider {
+  width: 100%;
+  height: 4px;
+  accent-color: var(--pb-signal);
+  cursor: pointer;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--pb-hair);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ===================================================================
+   WORK ORDER REPORT PRINT & AUDIT STYLING
+   =================================================================== */
+.report-print-content {
+  width: 900px;
+}
+
+.report-header-card {
+  background: rgba(16, 20, 31, 0.8);
+  border: 1px solid var(--pb-hair);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.report-title-block h2 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--pb-text);
+  letter-spacing: 0.5px;
+}
+.report-title-block span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--pb-dim);
+}
+
+.report-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: rgba(11, 14, 22, 0.85);
+  border: 1px solid var(--pb-hair);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.report-meta-item label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--pb-dim);
+  text-transform: uppercase;
+}
+.report-meta-item strong {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--pb-text);
+}
+
+.report-section-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--pb-signal);
+  letter-spacing: 0.8px;
+  margin-top: 8px;
+}
+
+.report-models-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.report-models-table th, .report-models-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--pb-hair);
+  text-align: left;
+}
+.report-models-table th {
+  background: rgba(16, 20, 31, 0.9);
+  color: var(--pb-muted);
+  font-family: var(--font-display);
+  font-size: 10px;
+}
+
+.report-rec-box {
+  background: rgba(61, 245, 192, 0.08);
+  border: 1px solid rgba(61, 245, 192, 0.3);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 12px;
+  color: var(--pb-text);
+  line-height: 1.5;
+}
+
+/* ===================================================================
+   SEMINAR HIGH-CONTRAST MODE
+   =================================================================== */
+body.seminar-active {
+  --pb-bg: #000000;
+  --pb-surface: rgba(16, 20, 31, 0.95);
+  --pb-surface-2: rgba(22, 28, 44, 0.98);
+  --pb-hair: rgba(255, 255, 255, 0.18);
+}
+body.seminar-active .metric-big {
+  font-size: 32px;
+}
+body.seminar-active .scada-header h1 {
+  font-size: 19px;
+}
+
+/* ===================================================================
+   RESPONSIVE LAYOUT BREAKPOINTS
+   =================================================================== */
+@media (max-width: 1320px) {
   .dashboard-grid-2col {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .models-tri-grid {
     grid-template-columns: 1fr;
   }
 }
