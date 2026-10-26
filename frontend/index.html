@@ -265,7 +265,7 @@
             <div class="progress-track"><div id="rfHealthBar" class="progress-bar bg-rf" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Rate</label><span id="rfAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Fault Risk P(Fault)</label><span id="rfAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999999</span></div>
             <div class="stat-mini"><label>MAE vs Actual</label><span class="text-cyan">0.12 hrs</span></div>
           </div>
@@ -290,7 +290,7 @@
             <div class="progress-track"><div id="ridgeHealthBar" class="progress-bar bg-ridge" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Rate</label><span id="ridgeAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Fault Risk P(Fault)</label><span id="ridgeAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-amber">0.983445</span></div>
             <div class="stat-mini"><label>MAE vs Actual</label><span class="text-amber">36.71 hrs</span></div>
           </div>
@@ -315,7 +315,7 @@
             <div class="progress-track"><div id="xgbHealthBar" class="progress-bar bg-xgb" style="width:0%"></div></div>
           </div>
           <div class="model-stats-footer">
-            <div class="stat-mini"><label>Anomaly Rate</label><span id="xgbAnomaly">--%</span></div>
+            <div class="stat-mini"><label>Fault Risk P(Fault)</label><span id="xgbAnomaly">--%</span></div>
             <div class="stat-mini"><label>Dataset R²</label><span class="text-emerald">0.999989</span></div>
             <div class="stat-mini"><label>MAE vs Actual</label><span class="text-cyan">0.80 hrs</span></div>
           </div>
@@ -394,12 +394,12 @@
           <div class="dedicated-chart-head">
             <div class="chart-title-group">
               <span class="chart-model-chip badge-rf">MODEL 1: RANDOM FOREST</span>
-              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Risk</span>
             </div>
             <div class="dedicated-legend">
               <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
               <span class="leg-item"><span class="leg-box leg-rf"></span> RF Predicted RUL</span>
-              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Risk P(Fault)</span>
             </div>
           </div>
           <div class="dedicated-canvas-holder">
@@ -412,12 +412,12 @@
           <div class="dedicated-chart-head">
             <div class="chart-title-group">
               <span class="chart-model-chip badge-ridge">MODEL 2: RIDGE REGRESSION</span>
-              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Risk</span>
             </div>
             <div class="dedicated-legend">
               <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
               <span class="leg-item"><span class="leg-box leg-ridge"></span> Ridge Predicted RUL</span>
-              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Risk P(Fault)</span>
             </div>
           </div>
           <div class="dedicated-canvas-holder">
@@ -430,12 +430,12 @@
           <div class="dedicated-chart-head">
             <div class="chart-title-group">
               <span class="chart-model-chip badge-xgb">MODEL 3: XGBOOST (OUR CHOICE)</span>
-              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Rate</span>
+              <span class="chart-heading">Predicted RUL vs Actual RUL (Datasheet) &amp; Anomaly Risk</span>
             </div>
             <div class="dedicated-legend">
               <span class="leg-item"><span class="leg-box leg-actual"></span> Actual RUL from Datasheet</span>
               <span class="leg-item"><span class="leg-box leg-xgb"></span> XGBoost Predicted RUL</span>
-              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Rate (%)</span>
+              <span class="leg-item"><span class="leg-box leg-anom"></span> Anomaly Risk P(Fault)</span>
             </div>
           </div>
           <div class="dedicated-canvas-holder">

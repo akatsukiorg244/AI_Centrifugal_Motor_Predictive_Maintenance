@@ -505,7 +505,7 @@ function initCharts() {
             yAxisID: 'yRul'
           },
           {
-            label: "Anomaly Rate (%)",
+            label: "Anomaly Risk P(Fault)",
             data: rfAnom,
             borderColor: "#ef4444",
             backgroundColor: "rgba(239, 68, 68, 0.12)",
@@ -546,7 +546,7 @@ function initCharts() {
             yAxisID: 'yRul'
           },
           {
-            label: "Anomaly Rate (%)",
+            label: "Anomaly Risk P(Fault)",
             data: ridgeAnom,
             borderColor: "#ef4444",
             backgroundColor: "rgba(239, 68, 68, 0.12)",
@@ -587,7 +587,7 @@ function initCharts() {
             yAxisID: 'yRul'
           },
           {
-            label: "Anomaly Rate (%)",
+            label: "Anomaly Risk P(Fault)",
             data: xgbAnom,
             borderColor: "#ef4444",
             backgroundColor: "rgba(239, 68, 68, 0.12)",
