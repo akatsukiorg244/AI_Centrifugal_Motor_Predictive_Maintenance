@@ -1,64 +1,1250 @@
-:root{
-  --bg:#0d1117; --panel:#161b22; --border:#30363d; --text:#c9d1d9;
-  --accent:#58a6ff; --healthy:#00e676; --good:#7bd88f; --neutral:#ffd600;
-  --warn:#ff9100; --crit:#ff1744; --ml:#a371f7; --be:#3fb950; --fe:#f0883e;
+/* ===================================================================
+   CENTRIFUGAL PUMP DIGITAL TWIN — INDUSTRIAL SCADA STYLESHEET
+   Typography: Inter (Display/UI) + JetBrains Mono (Telemetry/Metrics)
+   Design System: Mission-Critical SCADA / Dark Glassmorphism / Cyber-Physical
+   =================================================================== */
+
+:root {
+  --bg-dark: #080b11;
+  --bg-panel: #0f172a;
+  --bg-card: #131d35;
+  --bg-subtle: #1e293b;
+  --border-dim: #1f2937;
+  --border-glow: #334155;
+  --border-focus: #38bdf8;
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Model color accents */
+  --color-rf: #8b5cf6;       /* Violet / Bagging */
+  --color-ridge: #f59e0b;    /* Amber / Linear */
+  --color-xgb: #06b6d4;      /* Cyan / Boosted */
+
+  /* Operational states */
+  --status-healthy: #10b981;  /* Emerald */
+  --status-good: #06b6d4;     /* Cyan */
+  --status-neutral: #f59e0b;  /* Amber */
+  --status-warning: #f97316;  /* Orange */
+  --status-critical: #ef4444; /* Crimson */
+
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-header{padding:14px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-header h1{font-size:20px;letter-spacing:1px}
-.conn{padding:6px 14px;border-radius:16px;font-size:12px;font-weight:bold;background:#333}
-.conn.live{background:var(--be);color:#000}
-.conn.sim{background:#8b6d1e;color:#fff}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-.banner{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;background:linear-gradient(90deg,#1a1a2e,#16213e);border-bottom:1px solid var(--border)}
-.layer{padding:7px 18px;border-radius:8px;font-weight:bold;font-size:13px}
-.ml{background:var(--ml);color:#fff}.be{background:var(--be);color:#fff}.fe{background:var(--fe);color:#fff}
-.arrow{color:var(--text)}
+body.industrial-theme {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+}
 
-.layout{display:grid;grid-template-columns:300px 1fr 320px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
-.panel h2{font-size:14px;margin-bottom:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
-.panel h3{font-size:12px;margin:16px 0 8px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+/* ===================================================================
+   SCADA HEADER BAR
+   =================================================================== */
+.scada-header {
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid var(--border-glow);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-.pump-stage{position:relative;width:200px;height:200px;margin:10px auto}
-.volute{position:absolute;inset:0;border-radius:50%;border:13px solid #30363d}
-.motor{position:absolute;inset:20px;border-radius:50%;border:5px solid var(--accent);
-  background:repeating-conic-gradient(#3a4454 0 12deg,#232b3a 12deg 24deg)}
-.impeller{position:absolute;inset:34px;border-radius:50%;
-  background:repeating-conic-gradient(#e94560 0 30deg,#a32740 30deg 60deg);
-  animation:spin 2.06s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pump-stage.shake{animation:shake .12s infinite}
-@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(2px,-2px)}75%{transform:translate(-2px,2px)}}
-.rpm-readout{text-align:center;font-family:monospace;font-size:14px;color:var(--accent)}
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
 
-.modes{display:flex;flex-direction:column;gap:8px}
-.modes button{padding:10px;border:1px solid var(--border);border-radius:8px;background:#0d1117;color:var(--text);cursor:pointer;font-size:13px;text-align:left;transition:.2s}
-.modes button:hover{border-color:var(--accent)}
-.modes button.active{border-color:var(--accent);background:rgba(88,166,255,.12)}
+.scada-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-.param{margin-bottom:10px}
-.param-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
-.param-val{font-family:monospace;color:var(--accent)}
-input[type=range]{width:100%;accent-color:var(--accent)}
-.diagnose{width:100%;margin-top:10px;padding:13px;border:none;border-radius:8px;background:var(--accent);color:#000;font-weight:bold;font-size:14px;cursor:pointer;letter-spacing:1px}
-.diagnose:hover{filter:brightness(1.15)}
-.diagnose:disabled{opacity:.5}
+.icon-gear {
+  font-size: 26px;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+  animation: slowSpin 20s linear infinite;
+}
+@keyframes slowSpin { to { transform: rotate(360deg); } }
 
-.state-badge{text-align:center;padding:16px;border-radius:10px;border:2px solid #333;font-size:19px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;transition:.3s}
-.gauge{height:10px;background:#0d1117;border-radius:5px;overflow:hidden;border:1px solid var(--border)}
-.gauge div{height:100%;width:0%;background:var(--accent);transition:width .6s ease}
-.score{text-align:center;font-size:40px;font-weight:bold;font-family:monospace;margin:8px 0 2px}
-.score small{font-size:14px;color:#8892b0}
-.source{text-align:center;font-size:11px;color:#8892b0;margin-bottom:12px}
+.logo-text h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #fff;
+  line-height: 1.2;
+}
 
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.metric{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
-.metric label{display:block;font-size:11px;opacity:.7;margin-bottom:4px}
-.metric span{font-size:17px;font-weight:bold;font-family:monospace}
+.sub-heading {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
 
-.factor{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)}
+.iso-standard-tag {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--status-healthy);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.5px;
+}
 
-@media(max-width:1100px){.layout{grid-template-columns:1fr}}
+.dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-healthy);
+  box-shadow: 0 0 6px var(--status-healthy);
+  animation: pulseDot 1.5s infinite;
+}
+@keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.telemetry-clock {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-dark);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-dim);
+}
+
+.connection-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s;
+}
+
+.status-cloud {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: var(--color-xgb);
+}
+.status-cloud.live {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: var(--status-healthy);
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.btn-action {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-outline {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  color: var(--text-main);
+}
+.btn-outline:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-focus);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: 1px solid #38bdf8;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+.btn-primary:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+}
+
+/* ===================================================================
+   CONSENSUS STRIP
+   =================================================================== */
+.consensus-bar {
+  background: rgba(15, 23, 42, 0.7);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.consensus-kpi {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.8px;
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.text-cyan { color: #38bdf8; }
+.text-emerald { color: #10b981; }
+.text-amber { color: #f59e0b; }
+.text-crimson { color: #ef4444; }
+
+.consensus-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-dim);
+}
+
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.status-healthy { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+.status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+.status-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); }
+
+/* ===================================================================
+   MAIN WORKSPACE GRID
+   =================================================================== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 340px;
+  gap: 16px;
+  padding: 16px 20px;
+  flex: 1;
+  max-width: 1920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 10px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-tag {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-glow);
+  color: var(--text-muted);
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.card-header h2 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* ===================================================================
+   PANEL 1: PHYSICAL DIGITAL TWIN SCHEMATIC
+   =================================================================== */
+.twin-state-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--status-healthy);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.twin-viewport {
+  background: #090e1a;
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.pump-schematic {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Rotating impeller animation */
+.rotating-blades {
+  transform-origin: 0px 0px;
+  animation: bladeSpin 0.8s linear infinite;
+}
+@keyframes bladeSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Twin interactive hotspots */
+.twin-hotspot {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.twin-hotspot:hover {
+  filter: drop-shadow(0 0 6px #38bdf8);
+  stroke-width: 2.5;
+}
+
+/* Hotspot diagnostic detail box */
+.hotspot-detail-box {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-glow);
+  border-left: 3px solid #38bdf8;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.hotspot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.hotspot-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.hotspot-health-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--status-healthy);
+}
+
+.hotspot-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Fault injection controls */
+.fault-injection-panel {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.panel-subhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.help-tooltip {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.fault-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.btn-scenario {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-scenario:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-focus);
+  color: #fff;
+}
+
+.btn-scenario.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+}
+
+/* Timeline scrubber */
+.timeline-scrubber-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.scrubber-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.scrubber-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+
+.scrubber-idx {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-xgb);
+  font-weight: 700;
+}
+
+.slider-scrubber {
+  width: 100%;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.scrubber-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ===================================================================
+   PANEL 2: 3-MODEL CONCURRENT COMPARISON MATRIX
+   =================================================================== */
+.tag-live {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--status-healthy);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.models-tri-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.model-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.model-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.card-rf { border-top: 3px solid var(--color-rf); }
+.card-ridge { border-top: 3px solid var(--color-ridge); }
+.card-xgb { border-top: 3px solid var(--color-xgb); }
+
+.model-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.model-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.badge-rf { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+.badge-ridge { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+.badge-xgb { background: rgba(6, 182, 212, 0.2); color: #a5f3fc; }
+
+.model-paradigm {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.model-rul-section {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-dim);
+}
+
+.metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.metric-big {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+.metric-big small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.metric-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.model-gauge-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gauge-label-wrap {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.gauge-label-wrap strong {
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--bg-dark);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-dim);
+}
+
+.progress-bar {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+.bg-rf { background: var(--color-rf); }
+.bg-ridge { background: var(--color-ridge); }
+.bg-xgb { background: var(--color-xgb); }
+
+.model-stats-footer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  border-top: 1px solid var(--border-dim);
+  padding-top: 8px;
+  text-align: center;
+}
+
+.stat-mini label {
+  display: block;
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.stat-mini span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Consensus insight box */
+.consensus-detail-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.delta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.delta-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.badge-consensus {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--status-healthy);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.delta-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Synchronized Charts */
+.charts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-wrapper {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chart-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.chart-legend-custom {
+  display: flex;
+  gap: 10px;
+}
+
+.legend-chip {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.color-actual { background: rgba(241, 245, 249, 0.15); color: #fff; }
+.color-rf { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+.color-ridge { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+.color-xgb { background: rgba(6, 182, 212, 0.2); color: #a5f3fc; }
+
+.chart-alert-tag, .chart-metric-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--status-healthy);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.canvas-holder {
+  height: 130px;
+  width: 100%;
+  position: relative;
+}
+
+/* ===================================================================
+   PANEL 3: TELEMETRY SLIDERS (13 FEATURES)
+   =================================================================== */
+.btn-micro {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-glow);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-micro:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.telemetry-scroll-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.telemetry-scroll-area::-webkit-scrollbar {
+  width: 5px;
+}
+.telemetry-scroll-area::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+.telemetry-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 3px;
+}
+
+.telemetry-row {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  padding: 8px 10px;
+  transition: border-color 0.2s;
+}
+.telemetry-row:hover {
+  border-color: var(--border-glow);
+}
+
+.telemetry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.telemetry-label {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.telemetry-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.telemetry-slider {
+  width: 100%;
+  height: 4px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.btn-diagnose {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border: 1px solid #38bdf8;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+.btn-diagnose:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.5);
+}
+
+/* Feature importance list */
+.factors-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.factors-head {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.factor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.factor-name {
+  color: var(--text-muted);
+}
+
+.factor-weight {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #f59e0b;
+}
+
+/* ===================================================================
+   MODAL WINDOWS & BENCHMARK DIALOG
+   =================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glow);
+  border-radius: 10px;
+  width: 900px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-glow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-intro {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.benchmark-table th, .benchmark-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.benchmark-table th {
+  background: var(--bg-card);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.benchmark-summary-box {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.benchmark-summary-box h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 6px;
+}
+
+.benchmark-summary-box p {
+  font-size: 12px;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+/* ===================================================================
+   RESPONSIVE DESIGN & 2-COLUMN SCADA LAYOUT
+   =================================================================== */
+.dashboard-grid-2col {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  flex: 1;
+  max-width: 1920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.panel-main-suite {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Telemetry snapshot under twin */
+.telemetry-snapshot-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.snapshot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.snapshot-item {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  border-radius: 4px;
+  padding: 5px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.snapshot-label {
+  color: var(--text-muted);
+}
+
+.snapshot-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+/* ===================================================================
+   ON-PAGE MODEL ACCURACY BENCHMARK TABLE
+   =================================================================== */
+.benchmark-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 8px;
+}
+
+.table-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-card-title h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.dataset-source-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-dark);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-dim);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.accuracy-benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.accuracy-benchmark-table th, .accuracy-benchmark-table td {
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.accuracy-benchmark-table th {
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.accuracy-benchmark-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.row-highlight {
+  background: rgba(6, 182, 212, 0.08);
+  border-left: 3px solid var(--color-xgb);
+}
+
+.color-text-rf { color: var(--color-rf); }
+.color-text-ridge { color: var(--color-ridge); }
+.color-text-xgb { color: var(--color-xgb); }
+
+.verdict-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.verdict-good { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+.verdict-linear { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4); }
+.verdict-recommended { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.5); }
+
+/* ===================================================================
+   3 DEDICATED GRAPHS FOR EACH MODEL
+   =================================================================== */
+.three-graphs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dedicated-chart-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+.dedicated-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chart-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-model-chip {
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.chart-heading {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.dedicated-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.leg-box {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+}
+.leg-actual { background: #ffffff; }
+.leg-rf { background: var(--color-rf); }
+.leg-ridge { background: var(--color-ridge); }
+.leg-xgb { background: var(--color-xgb); }
+.leg-anom { background: #ef4444; }
+
+.dedicated-canvas-holder {
+  height: 140px;
+  width: 100%;
+  position: relative;
+}
+
+/* Modal sliders */
+.modal-sliders-content {
+  width: 820px;
+}
+.modal-sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-height: 460px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
